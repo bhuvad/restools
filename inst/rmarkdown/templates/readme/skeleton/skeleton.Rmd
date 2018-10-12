@@ -1,0 +1,61 @@
+---
+title: "File structure"
+author: First Author
+output:
+  BiocStyle::html_document
+vignette: |
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+>To automate updates to this file, do not modify the formatting used including
+the comments. Only modify descriptions for files/directories.
+
+<!--Automatically generated--> 
+# File structure {.tabset .tabset-fade .tabset-pills}
+## ./data {.unnumbered}
+Data used in the analysis
+<!--@data:begin-->
+
+<!--@data:end-->
+
+## ./code {.unnumbered}
+Code for the analysis
+<!--@code:begin-->
+
+<!--@code:end-->
+
+### ./code/raw_code {.unnumbered}
+Experimental/exploratory code
+<!--@code/raw_code:begin-->
+
+<!--@code/raw_code:end-->
+
+### ./code/final_code {.unnumbered}
+Code used to perform the analysis
+<!--@code/final_code:begin-->
+
+<!--@code/final_code:end-->
+
+## ./products {.unnumbered}
+Research outputs from the project
+<!--@products:begin-->
+
+<!--@products:end-->
+
+## ./figures {.unnumbered}
+Figures generated in the analysis. Use the plot_diary instead.
+<!--@figures:begin-->
+
+<!--@figures:end-->
+
+## ./literature {.unnumbered}
+Literature for the project. Use the lit_diary instead.
+<!--@literature:begin-->
+
+<!--@literature:end-->
+
+<!--Manual editing--> 
+# Other resources used in the project
+Add any paths and descriptions for any external files/directories used in the
+project.

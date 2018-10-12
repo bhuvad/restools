@@ -1,0 +1,6 @@
+name: README template
+description: >
+  Template to create a README file for the directory structure.
+create_dir: false
+output:
+  github_document

@@ -1,0 +1,14 @@
+---
+title: "Plot diary"
+author:
+- name: First Author
+  affiliation: First Author's Affiliation
+  email: corresponding@author.com
+output:
+  BiocStyle::html_document:
+    toc_float: true
+vignette: |
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+

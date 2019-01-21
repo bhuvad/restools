@@ -4,11 +4,14 @@ author:
 - name: First Author
   affiliation: First Author's Affiliation
   email: corresponding@author.com
+date: "`r Sys.Date()`"
 output:
   BiocStyle::html_document:
     toc_float: true
+bibliography: bibliography.bib
 vignette: |
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
+# References

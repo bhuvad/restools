@@ -111,6 +111,26 @@ getFiles <- function(dsproj = '.',  ...) {
   return(files)
 }
 
+#get dirs within the folder of interest
+getDirs <- function(dsproj = '.',  ...) {
+  checkDSproject(dsproj)
+
+  qrypath = file.path(dsproj, ...)
+  files = list.dirs(qrypath, full.names = FALSE, recursive = TRUE)
+
+  #return if no files
+  if (length(files) == 0)
+    return(character())
+
+  files = paste0('./', file.path(..., files))
+  files = sort(files)
+  #remove trailing slashes
+  pat = paste0(.Platform$file.sep, '$')
+  files = stringr::str_remove(files, pat)
+
+  return(files)
+}
+
 #stop if not a DS project
 checkDSproject <- function(dsproj = '.') {
   stopifnot(isDSproject(dsproj))

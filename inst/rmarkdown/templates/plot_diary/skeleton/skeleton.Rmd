@@ -4,6 +4,7 @@ author:
 - name: First Author
   affiliation: First Author's Affiliation
   email: corresponding@author.com
+date: "`r Sys.Date()`"
 output:
   BiocStyle::html_document:
     toc_float: true
@@ -12,3 +13,17 @@ vignette: |
   %\VignetteEncoding{UTF-8}
 ---
 
+<!--Automatically generated--> 
+# Explanatory
+Final figures that explain the results of the data analysis. These would usually
+be figures generated for papers, posters, and presentations.
+<!--@explanatory:begin-->
+
+<!--@explanatory:end-->
+
+# Exploratory
+Figures used for the exploration of the data. These include figures generated in
+preliminary analysis.
+<!--@exploratory:begin-->
+
+<!--@exploratory:end-->

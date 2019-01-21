@@ -1,6 +1,7 @@
 ---
 title: "File structure"
 author: First Author
+date: "`r Sys.Date()`"
 output:
   BiocStyle::html_document
 vignette: |

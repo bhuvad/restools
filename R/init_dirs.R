@@ -24,6 +24,7 @@
 #' # create project named "ds_project" in home folder
 #' createDSProject('ds_project', '~')
 #' }
+#'
 createDSProject <- function(pname = NULL, path = '.') {
   stopifnot(!is.null(pname))
 
@@ -35,6 +36,9 @@ createDSProject <- function(pname = NULL, path = '.') {
   } else{
     warning('directory exists, proceeding with setup')
   }
+
+  #create R project with defaults
+  init_rproj(pname, path)
 
   #create subsequent directories
   dir.create(file.path(dpath, '.dsproject'))                    #.dsproject
@@ -59,6 +63,7 @@ createDSProject <- function(pname = NULL, path = '.') {
   rmarkdown::render(pltdiaryf, quiet = TRUE)
 
   #create Rmds for lit_review
+  cat('', file = file.path(dpath, 'literature', 'bibliography.bib'))
   litreviewf = file.path(dpath, 'literature', 'lit_review.Rmd')
   rmarkdown::draft(litreviewf, template = 'lit_review', package = 'restools', edit = FALSE)
   rmarkdown::render(litreviewf, quiet = TRUE)
@@ -70,4 +75,25 @@ init_git <- function() {
 
 init_config <- function() {
 
+}
+
+init_rproj <- function(pname, path) {
+  proj_text = 'Version: 1.0
+
+  RestoreWorkspace: Default
+  SaveWorkspace: Default
+  AlwaysSaveHistory: Default
+
+  EnableCodeIndexing: Yes
+  UseSpacesForTab: Yes
+  NumSpacesForTab: 2
+  Encoding: UTF-8
+
+  RnwWeave: Sweave
+  LaTeX: pdfLaTeX'
+  proj_text = strsplit(proj_text, '\n')[[1]]
+  proj_text = gsub("^\\s+|\\s+$", "", proj_text)
+
+  #write project string to project directory
+  writeLines(proj_text, con = file.path(path, pname, paste0(pname, '.Rproj')))
 }

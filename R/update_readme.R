@@ -28,6 +28,8 @@ update_readme <- function(dsproj = '.') {
   readme = updateReadmeSection(dsproj, readme, 'data')
   readme = updateReadmeSection(dsproj, readme, 'code', 'raw_code')
   readme = updateReadmeSection(dsproj, readme, 'code', 'final_code')
+  readme = updateReadmeSection(dsproj, readme, 'figures', 'exploratory')
+  readme = updateReadmeSection(dsproj, readme, 'figures', 'explanatory')
   readme = updateReadmeSection(dsproj, readme, 'products')
 
   writeLines(readme, con = rmdfile)
@@ -39,7 +41,7 @@ updateReadmeSection <- function(dsproj = '.', readme,  ...) {
   #create record templates
   dirpath = file.path(...)
   files = getFiles(dsproj, dirpath)
-  frecords = paste0('* _', files, '_ - description here')
+  frecords = paste0('* ** ', files, ' ** - description here')
   names(frecords) = files
 
   #create tags
@@ -55,12 +57,12 @@ updateReadmeSection <- function(dsproj = '.', readme,  ...) {
 
   #extract relevant section and locate records
   dirrecord = readme[seq(bpos, epos)]
-  dirrecord = readme[bpos + which(grepl('^*.*_.*_.*-', dirrecord)) - 1]
-  dirrecord = plyr::ldply(stringr::str_split(dirrecord, '-'))
-  frecords =  plyr::ldply(stringr::str_split(frecords, '-'))
+  dirrecord = readme[bpos + which(grepl('^*.*\\*\\*.*\\*\\*.*-', dirrecord)) - 1]
+  dirrecord = plyr::ldply(stringr::str_split(dirrecord, ' - '))
+  frecords =  plyr::ldply(stringr::str_split(frecords, ' - '))
 
   #if no files, remove the record from the README
-  if (grepl('^*.*__', frecords[1, 1])) {
+  if (grepl('^*.*\\*\\*\\*\\*', frecords[1, 1])) {
     #replace original README section
     readme = c(
       readme[1:bpos],
@@ -79,7 +81,7 @@ updateReadmeSection <- function(dsproj = '.', readme,  ...) {
     commonrecs = intersect(dirrecord$file, frecords$file)
     frecords[commonrecs, 'desc'] = dirrecord[commonrecs, 'desc']
   }
-  frecords = apply(frecords, 1, paste, collapse = '-')
+  frecords = apply(frecords, 1, paste, collapse = ' - ')
   names(frecords) = NULL
 
   #replace original README section

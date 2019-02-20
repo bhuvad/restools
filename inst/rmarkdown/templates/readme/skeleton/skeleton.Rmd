@@ -10,7 +10,8 @@ vignette: |
 ---
 
 >To automate updates to this file, do not modify the formatting used including
-the comments. Only modify descriptions for files/directories.
+the comments. Only modify descriptions for files/directories. Make sure descriptions
+do not have new lines within them. This is not yet supported.
 
 <!--Automatically generated--> 
 # File structure {.tabset .tabset-fade .tabset-pills}
@@ -49,6 +50,20 @@ Figures generated in the analysis. Use the plot_diary instead.
 <!--@figures:begin-->
 
 <!--@figures:end-->
+
+### ./figures/exploratory {.unnumbered}
+Figures used for the exploration of the data. These include figures generated in
+preliminary analysis.
+<!--@figures/exploratory:begin-->
+
+<!--@figures/exploratory:end-->
+
+### ./figures/explanatory {.unnumbered}
+Final figures that explain the results of the data analysis. These would usually
+be figures generated for papers, posters, and presentations.
+<!--@figures/explanatory:begin-->
+
+<!--@figures/explanatory:end-->
 
 ## ./literature {.unnumbered}
 Literature for the project. Use the lit_diary instead.

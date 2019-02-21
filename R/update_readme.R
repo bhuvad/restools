@@ -36,6 +36,92 @@ update_readme <- function(dsproj = '.') {
   rmarkdown::render(rmdfile, quiet = TRUE)
 }
 
+#locate a specific section of the readme file
+locateReadmeSection <- function(dsproj = '.', readme, ...) {
+  #create record templates
+  dirpath = file.path(...)
+  files = getFiles(dsproj, dirpath)
+  frecords = paste0('* ** ', files, ' ** - description here')
+  names(frecords) = files
+
+  #create section tags for start and end and locate section using them
+  btag = paste0('^\\h*<!--@', dirpath, ':begin-->') #begin
+  etag = paste0('^\\h*<!--@', dirpath, ':end-->') #end
+  bpos = which(grepl(btag, readme))
+  epos = which(grepl(etag, readme))
+
+  #error if either position is missing
+  if (length(bpos) != 1 || length(epos) != 1) {
+    stop("Tags may have been modified, make sure only descriptions have been changed")
+  }
+
+  #return null if no records
+  if (epos - bpos == 1)
+    return(NULL)
+
+  return(list('begin' = bpos + 1, 'end' = epos - 1))
+}
+
+#extract a specific section of the readme file
+extractReadmeSection <- function(readme, loc) {
+  readme_section = readme[seq(loc$begin, loc$end)]
+  return(readme_section)
+}
+
+#extract records from the readme section and create data.frame
+getReadmeRecords <- function(content) {
+  #create regular expressions for extraction
+  regex_file = '`.+`' #file info in a single record
+  regex_bullet = '^\\h*\\*\\h+'
+  regex_dash = '\\h+-\\h+'
+  regex_record = paste0(regex_bullet, regex_file, regex_dash)
+
+  #locate records
+  #add empty records to ease cutting
+  record_loc = which(grepl(regex_record, content, perl = TRUE))
+  if (length(record_loc) == 0)
+    return(NULL)
+
+  #split records
+  cut_breaks = c(record_loc - 1, length(content))
+  cut_factors = cut(seq(1, length(content)), breaks = cut_breaks)
+  readme_records = split(content, cut_factors)
+  readme_records = plyr::ldply(readme_records, function(rec) {
+    #flatten record - no newlines
+    rec = paste(rec, collapse = '\n')
+    rec = stringr::str_replace_all(rec, '\\h*\n+\\h*', ' ')
+
+    #extract file name
+    fname = stringr::str_extract_all(rec, regex_file)[[1]]
+    fname = stringr::str_replace_all(fname, '`', '')
+    fname = stringr::str_trim(fname, 'both')
+
+    #extract description
+    desc = stringr::str_replace_all(rec, regex_record, '')
+    desc = stringr::str_trim(desc, 'both')
+
+    return(c('file' = fname, 'description' = desc))
+  })[, -1]
+
+  return(readme_records)
+}
+
+#convert each file to a markdown record
+updateReadmeSection2 <- function(dsproj = '.', readme,  ...) {
+  #locate section
+  loc = locateReadmeSection(dsproj = '.', readme, ...)
+  #return unmodified readme file  if no records exist for section
+  if (is.null(loc))
+    return(readme)
+
+  #extract section content
+  section_content = extractReadmeSection(readme, loc)
+  record_df = getReadmeRecords(section_content)
+  #return unmodified readme file  if no records exist for section
+  if (is.null(record_df))
+    return(readme)
+}
+
 #convert each file to a markdown record
 updateReadmeSection <- function(dsproj = '.', readme,  ...) {
   #create record templates
@@ -44,7 +130,7 @@ updateReadmeSection <- function(dsproj = '.', readme,  ...) {
   frecords = paste0('* ** ', files, ' ** - description here')
   names(frecords) = files
 
-  #create tags
+  #create section tags for start and end and locate section using them
   btag = paste0('<!--@', dirpath, ':begin-->') #begin
   etag = paste0('<!--@', dirpath, ':end-->') #end
   bpos = which(grepl(btag, readme))

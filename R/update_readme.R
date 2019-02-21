@@ -69,7 +69,9 @@ extractReadmeSection <- function(readme, loc) {
 replaceReadmeSection <- function(readme, loc, new_records) {
   new_readme = c(
     readme[seq(1, loc$begin - 1)],
+    '',
     new_records,
+    '',
     readme[seq(loc$end + 1, length(readme))]
   )
 
@@ -103,6 +105,7 @@ getReadmeRecords <- function(content) {
     fname = stringr::str_extract_all(rec, regex_file)[[1]]
     fname = stringr::str_replace_all(fname, '`', '')
     fname = stringr::str_trim(fname, 'both')
+    fname = stringr::str_replace_all(fname, '/$', '')
 
     #extract description
     desc = stringr::str_replace_all(rec, regex_record, '')
@@ -159,8 +162,8 @@ updateReadmeSection <- function(dsproj = '.', readme,  ...) {
   files = union(files, trunc_dirs)
 
   #----compute new record df----
-  updated_record_df = merge(data.frame('file' = files), record_df, all.x = TRUE)
-  updated_record_df = updated_record_df[order(updated_record_df$file), ]
+  updated_record_df = merge(data.frame('file' = files), record_df, all.x = TRUE, sort = TRUE)
+  updated_record_df$description[is.na(updated_record_df$description)] = 'description here'
 
   #----replace section----
   new_records = createReadmeRecords(updated_record_df)

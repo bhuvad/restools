@@ -10,8 +10,7 @@ vignette: |
 ---
 
 >To automate updates to this file, do not modify the formatting used including
-the comments. Only modify descriptions for files/directories. Make sure descriptions
-do not have new lines within them. This is not yet supported.
+the comments. Only modify descriptions for files/directories.
 
 <!--Automatically generated--> 
 # File structure {.tabset .tabset-fade .tabset-pills}

@@ -165,9 +165,38 @@ updateReadmeSection <- function(dsproj = '.', readme,  ...) {
   updated_record_df = merge(data.frame('file' = files), record_df, all.x = TRUE, sort = TRUE)
   updated_record_df$description[is.na(updated_record_df$description)] = 'description here'
 
+  #----add figure thumbnails for figure sections----
+  if (grepl('^figures/', dirpath, perl = TRUE))
+    updated_record_df = updateFigureDescriptions(updated_record_df)
+
   #----replace section----
   new_records = createReadmeRecords(updated_record_df)
   readme = replaceReadmeSection(readme, loc, new_records)
+}
+
+#for figures, update the description to include a link to the figure
+updateFigureDescriptions <- function(records, pdf_thumbs = FALSE) {
+  regex_img_link = '\\h*\\!\\[.*\\]\\(.*\\)\\h*'
+
+  #remove old links
+  records$description = sapply(records$description, function(x) {
+    x = stringr::str_replace_all(x, regex_img_link, '')
+    return(x)
+  })
+
+  #add new links
+  figext = tools::file_ext(records$file)
+  thumbs = !figext %in% 'db'
+  #possibly remove pdfs as they are too large
+  if (!pdf_thumbs) {
+    thumbs = thumbs & !figext %in% 'pdf'
+  }
+  records$description[thumbs] = mapply(paste0,
+                                       records$description[thumbs],
+                                       ' ![fig_thumbnail](',
+                                       records$file[thumbs],
+                                       ')')
+  return(records)
 }
 
 #get files within the folder of interest

@@ -12,4 +12,5 @@ Imports: rmarkdown,
     stringr,
     BiocStyle,
     plyr,
-    desc
+    desc,
+    tools

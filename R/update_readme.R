@@ -125,7 +125,7 @@ createReadmeRecords <- function(records) {
 }
 
 #convert each file to a markdown record
-updateReadmeSection2 <- function(dsproj = '.', readme,  ...) {
+updateReadmeSection <- function(dsproj = '.', readme,  ...) {
   #----locate section----
   loc = locateReadmeSection(dsproj = '.', readme, ...)
   #return unmodified readme file  if no records exist for section
@@ -165,66 +165,6 @@ updateReadmeSection2 <- function(dsproj = '.', readme,  ...) {
   #----replace section----
   new_records = createReadmeRecords(updated_record_df)
   readme = replaceReadmeSection(readme, loc, new_records)
-}
-
-#convert each file to a markdown record
-updateReadmeSection <- function(dsproj = '.', readme,  ...) {
-  #create record templates
-  dirpath = file.path(...)
-  files = getFiles(dsproj, dirpath)
-  frecords = paste0('* ** ', files, ' ** - description here')
-  names(frecords) = files
-
-  #create section tags for start and end and locate section using them
-  btag = paste0('<!--@', dirpath, ':begin-->') #begin
-  etag = paste0('<!--@', dirpath, ':end-->') #end
-  bpos = which(grepl(btag, readme))
-  epos = which(grepl(etag, readme))
-
-  #error if either position is missing
-  if (length(bpos) != 1 || length(epos) != 1) {
-    stop("Tags may have been modified, make sure only descriptions have been changed")
-  }
-
-  #extract relevant section and locate records
-  dirrecord = readme[seq(bpos, epos)]
-  dirrecord = readme[bpos + which(grepl('^*.*\\*\\*.*\\*\\*.*-', dirrecord)) - 1]
-  dirrecord = plyr::ldply(stringr::str_split(dirrecord, ' - '))
-  frecords =  plyr::ldply(stringr::str_split(frecords, ' - '))
-
-  #if no files, remove the record from the README
-  if (grepl('^*.*\\*\\*\\*\\*', frecords[1, 1])) {
-    #replace original README section
-    readme = c(
-      readme[1:bpos],
-      "",
-      readme[epos:length(readme)]
-    )
-
-    return(readme)
-  }
-
-  #select information from old README where available
-  if (nrow(dirrecord) > 0){
-    colnames(frecords) = colnames(dirrecord) = c('file', 'desc')
-    rownames(dirrecord) = dirrecord$file
-    rownames(frecords) = frecords$file
-    commonrecs = intersect(dirrecord$file, frecords$file)
-    frecords[commonrecs, 'desc'] = dirrecord[commonrecs, 'desc']
-  }
-  frecords = apply(frecords, 1, paste, collapse = ' - ')
-  names(frecords) = NULL
-
-  #replace original README section
-  readme = c(
-    readme[1:bpos],
-    "",
-    frecords,
-    "",
-    readme[epos:length(readme)]
-  )
-
-  return(readme)
 }
 
 #get files within the folder of interest

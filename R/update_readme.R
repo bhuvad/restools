@@ -40,9 +40,6 @@ update_readme <- function(dsproj = '.') {
 locateReadmeSection <- function(dsproj = '.', readme, ...) {
   #create record templates
   dirpath = file.path(...)
-  files = getFiles(dsproj, dirpath)
-  frecords = paste0('* ** ', files, ' ** - description here')
-  names(frecords) = files
 
   #create section tags for start and end and locate section using them
   btag = paste0('^\\h*<!--@', dirpath, ':begin-->') #begin
@@ -66,6 +63,17 @@ locateReadmeSection <- function(dsproj = '.', readme, ...) {
 extractReadmeSection <- function(readme, loc) {
   readme_section = readme[seq(loc$begin, loc$end)]
   return(readme_section)
+}
+
+#extract a specific section of the readme file
+replaceReadmeSection <- function(readme, loc, new_records) {
+  new_readme = c(
+    readme[seq(1, loc$begin - 1)],
+    new_records,
+    readme[seq(loc$end + 1, length(readme))]
+  )
+
+  return(new_readme)
 }
 
 #extract records from the readme section and create data.frame
@@ -106,20 +114,57 @@ getReadmeRecords <- function(content) {
   return(readme_records)
 }
 
+#create records for the README file from a records dataframe
+createReadmeRecords <- function(records) {
+  records = apply(records, 1, function(x) {
+    paste0('* `', x['file'], '` - ', x['description'])
+  })
+  names(records) = NULL
+
+  return(records)
+}
+
 #convert each file to a markdown record
 updateReadmeSection2 <- function(dsproj = '.', readme,  ...) {
-  #locate section
+  #----locate section----
   loc = locateReadmeSection(dsproj = '.', readme, ...)
   #return unmodified readme file  if no records exist for section
   if (is.null(loc))
     return(readme)
 
-  #extract section content
+  #----extract section content----
   section_content = extractReadmeSection(readme, loc)
   record_df = getReadmeRecords(section_content)
   #return unmodified readme file  if no records exist for section
   if (is.null(record_df))
     return(readme)
+
+  #----get list of existing files----
+  dirpath = file.path(...)
+  files = getFiles(dsproj, dirpath)
+
+  #----filter out files whose dir record has a truncation mark----
+  #e.g. ./dir1/dir2/* results in no annotations for files/dirs in dir2
+  #i.e. effectively stop recursion
+
+  #identify truncation records
+  trunc_dirs = record_df$file[grepl('\\*$', record_df$file)]
+  #identify files within truncation directories
+  trunc_dirs_names = stringr::str_sub(trunc_dirs, start = 3, end = -3)
+  rm_files = unlist(lapply(trunc_dirs_names, function(d) getFiles(dsproj, d)))
+  #add truncated dirs to rm_files for removal
+  rm_files = c(rm_files, paste0('./', trunc_dirs_names))
+  #remove these files from list of files whose records will be created
+  files = setdiff(files, rm_files)
+  files = union(files, trunc_dirs)
+
+  #----compute new record df----
+  updated_record_df = merge(data.frame('file' = files), record_df, all.x = TRUE)
+  updated_record_df = updated_record_df[order(updated_record_df$file), ]
+
+  #----replace section----
+  new_records = createReadmeRecords(updated_record_df)
+  readme = replaceReadmeSection(readme, loc, new_records)
 }
 
 #convert each file to a markdown record

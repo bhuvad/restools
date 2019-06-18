@@ -138,9 +138,6 @@ updateReadmeSection <- function(dsproj = '.', readme,  ...) {
   #----extract section content----
   section_content = extractReadmeSection(readme, loc)
   record_df = getReadmeRecords(section_content)
-  #return unmodified readme file  if no records exist for section
-  if (is.null(record_df))
-    return(readme)
 
   #----get list of existing files----
   dirpath = file.path(...)
@@ -150,23 +147,27 @@ updateReadmeSection <- function(dsproj = '.', readme,  ...) {
   #e.g. ./dir1/dir2/* results in no annotations for files/dirs in dir2
   #i.e. effectively stop recursion
 
-  #identify truncation records
-  trunc_dirs = record_df$file[grepl('\\*$', record_df$file)]
-  #identify files within truncation directories
-  trunc_dirs_names = stringr::str_sub(trunc_dirs, start = 3, end = -3)
-  rm_files = unlist(lapply(trunc_dirs_names, function(d) getFiles(dsproj, d)))
-  #add truncated dirs to rm_files for removal
-  rm_files = c(rm_files, paste0('./', trunc_dirs_names))
-  #remove these files from list of files whose records will be created
-  files = setdiff(files, rm_files)
-  files = union(files, trunc_dirs)
+  if (!is.null(record_df)) {
+    #identify truncation records
+    trunc_dirs = record_df$file[grepl('\\*$', record_df$file)]
+    #identify files within truncation directories
+    trunc_dirs_names = stringr::str_sub(trunc_dirs, start = 3, end = -3)
+    rm_files = unlist(lapply(trunc_dirs_names, function(d) getFiles(dsproj, d)))
+    #add truncated dirs to rm_files for removal
+    rm_files = c(rm_files, paste0('./', trunc_dirs_names))
+    #remove these files from list of files whose records will be created
+    files = setdiff(files, rm_files)
+    files = union(files, trunc_dirs)
+  } else{
+    record_df = data.frame('file' = character(), 'description' = character(), stringsAsFactors = FALSE)
+  }
 
   #----compute new record df----
   updated_record_df = merge(data.frame('file' = files), record_df, all.x = TRUE, sort = TRUE)
   updated_record_df$description[is.na(updated_record_df$description)] = 'description here'
 
   #----add figure thumbnails for figure sections----
-  if (grepl('^figures/', dirpath, perl = TRUE))
+  if (grepl('^figures/', dirpath, perl = TRUE) & nrow(updated_record_df) != 0)
     updated_record_df = updateFigureDescriptions(updated_record_df)
 
   #----replace section----

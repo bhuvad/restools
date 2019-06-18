@@ -57,11 +57,6 @@ createDSProject <- function(pname = NULL, path = '.') {
   rmarkdown::draft(readmef, template = 'readme', package = 'restools', edit = FALSE)
   rmarkdown::render(readmef, quiet = TRUE)
 
-  #create Rmds for plot_diary
-  pltdiaryf = file.path(dpath, 'figures', 'plot_diary.Rmd')
-  rmarkdown::draft(pltdiaryf, template = 'plot_diary', package = 'restools', edit = FALSE)
-  rmarkdown::render(pltdiaryf, quiet = TRUE)
-
   #create Rmds for lit_review
   cat('', file = file.path(dpath, 'literature', 'bibliography.bib'))
   litreviewf = file.path(dpath, 'literature', 'lit_review.Rmd')

@@ -176,8 +176,19 @@ updateReadmeSection <- function(dsproj = '.', readme,  ...) {
 }
 
 #for figures, update the description to include a link to the figure
-updateFigureDescriptions <- function(records, pdf_thumbs = FALSE) {
+updateFigureDescriptions <- function(records, max_size_mb = 10) {
   regex_img_link = '\\h*\\!\\[.*\\]\\(.*\\)\\h*'
+
+  max_size_mb = max_size_mb * 4 #knitr by default reduces height and width by 50%
+  allowed_ftypes = c('png', 'jpg', 'jpeg', 'tiff', 'svg', 'bmp')
+
+  records$file = as.character(records$file)
+  records$description = as.character(records$description)
+
+  #allow pdf display for explanatory figures
+  if (all(grepl('explanatory', records$file))) {
+    allowed_ftypes = c(allowed_ftypes, 'pdf')
+  }
 
   #remove old links
   records$description = sapply(records$description, function(x) {
@@ -185,19 +196,32 @@ updateFigureDescriptions <- function(records, pdf_thumbs = FALSE) {
     return(x)
   })
 
-  #add new links
+  #add new links/thumbnails
   figext = tools::file_ext(records$file)
-  thumbs = !figext %in% 'db'
-  #possibly remove pdfs as they are too large
-  if (!pdf_thumbs) {
-    thumbs = thumbs & !figext %in% 'pdf'
+  figsizes = file.size(records$file)
+  thumbs = figext %in% allowed_ftypes
+
+  #remove large files such that the total size of all files is max_size_mb
+  thumbs = thumbs & figsizes < getSizeThresh(figsizes[thumbs], max_size_mb)
+
+  #if all items are too large, don't add thumbnails
+  if (all(!thumbs)) {
+    return(records)
   }
+
   records$description[thumbs] = mapply(paste0,
                                        records$description[thumbs],
                                        ' ![fig_thumbnail](',
                                        records$file[thumbs],
                                        ')')
   return(records)
+}
+
+#get a threshold for image file sizes that results in a total of N MB
+getSizeThresh <- function(sizes, nMB = 10) {
+  sizes = sort(sizes)
+  thresh = max(sizes[cumsum(sizes / 2^20) < nMB], 0)
+  return(thresh + 1)
 }
 
 #get files within the folder of interest

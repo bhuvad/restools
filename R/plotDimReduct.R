@@ -1,3 +1,6 @@
+#' @import ggplot2
+NULL
+
 #' Compute and plot the results of a PCA analysis on gene expression data
 #'
 #' @param edata a DGEList, SummarizedExperiment or ExpressionSet object

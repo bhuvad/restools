@@ -17,9 +17,10 @@
 #' @examples
 #' \dontrun{
 #' # for "ds_project" in home folder
-#' update_readme('~/ds_project')
+#' updateReadme('~/ds_project')
 #' }
-update_readme <- function(dsproj = '.') {
+#'
+updateReadme <- function(dsproj = '.') {
   #read README file
   rmdfile = file.path(dsproj, 'README.Rmd')
   readme = readLines(rmdfile)

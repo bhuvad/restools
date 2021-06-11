@@ -17,7 +17,7 @@
 #'
 #' @export
 #'
-#' @seealso \code{\link{update_readme}}
+#' @seealso \code{\link{updateReadme}}
 #'
 #' @examples
 #' \dontrun{

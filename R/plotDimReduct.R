@@ -206,19 +206,24 @@ addSampleAnnot <- function(plotdf, sdata) {
 }
 
 plotDR_intl <- function(drdf, sdata, rl, ...) {
-  #extract aes
-  aesmap = rlang::enquos(...)
 
   #annotate samples
   plotdf = addSampleAnnot(drdf, sdata)
 
+  #extract aes
+  aesmap = rlang::enquos(...)
   #compute plot
   aesmap = aesmap[!names(aesmap) %in% c('x', 'y')] #remove x,y mappings if present
 
   #split aes params into those that are not aes i.e. static parametrisation
-  is_aes = sapply(aesmap, rlang::quo_is_symbolic)
-  defaultmap = lapply(aesmap[!is_aes], rlang::eval_tidy)
-  aesmap = aesmap[is_aes]
+  if (length(aesmap) > 0) {
+    is_aes = sapply(aesmap, rlang::quo_is_symbolic)
+    defaultmap = lapply(aesmap[!is_aes], rlang::eval_tidy)
+    aesmap = aesmap[is_aes]
+  } else {
+    defaultmap = list()
+  }
+
 
   # aes requires x & y to be explicit: https://github.com/tidyverse/ggplot2/issues/3176
   x = rlang::sym(colnames(plotdf)[[2]])

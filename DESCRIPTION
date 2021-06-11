@@ -16,6 +16,7 @@ Imports:
     plyr,
     desc,
     tools,
+    vissE,
     edgeR,
     limma,
     ggplot2,
@@ -24,5 +25,7 @@ Imports:
     grDevices
 RoxygenNote: 7.1.1
 Suggests: 
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    emtdata,
+    ALL
 Config/testthat/edition: 3

@@ -95,7 +95,7 @@ setMethod("plotPCA",
 #' @examples
 #' se = emtdata::cursons2018_se()
 #' dge = emtdata::asDGEList(se)
-#' plotMDS(dge, colour = "Subline")
+#' plotMDS(dge, colour = Subline)
 #'
 setGeneric("plotMDS",
            function(edata,
@@ -236,5 +236,6 @@ plotDR_intl <- function(drdf, sdata, rl, ...) {
   # tidystyle recommends no explicit return statements at end of functions
   ggplot2::ggplot(plotdf, ggplot2::aes(!!x, !!y, !!!aesmap)) +
     ggplot2::geom_point() +
-    ggplot2::update_geom_defaults('point', defaultmap)
+    ggplot2::update_geom_defaults('point', defaultmap) +
+    vissE::bhuvad_theme(rl)
 }

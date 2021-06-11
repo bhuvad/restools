@@ -8,9 +8,18 @@ Depends: R (>= 3.5.0),
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-Imports: rmarkdown,
+Imports: 
+    rmarkdown,
     stringr,
     BiocStyle,
     plyr,
     desc,
-    tools
+    tools,
+    vissE,
+    edgeR,
+    limma,
+    ggplot2,
+    SummarizedExperiment,
+    Biobase,
+    grDevices
+RoxygenNote: 7.1.1

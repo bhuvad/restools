@@ -14,7 +14,7 @@
 #' @examples
 #' se = emtdata::cursons2018_se()
 #' dge = emtdata::asDGEList(se)
-#' plotPCA(dge, colour = "Subline")
+#' plotPCA(dge, colour = Subline)
 #'
 setGeneric("plotPCA",
            function(edata,
@@ -207,31 +207,29 @@ addSampleAnnot <- function(plotdf, sdata) {
 
 plotDR_intl <- function(drdf, sdata, rl, ...) {
   #extract aes
-  aesmap = list(...)
+  aesmap = rlang::enquos(...)
 
   #annotate samples
   plotdf = addSampleAnnot(drdf, sdata)
 
   #compute plot
-  aesmap = aesmap[setdiff(names(aesmap), c('x', 'y'))] #remove x,y mappings if present
-  aesmap$x = colnames(plotdf)[2] #has to be positionally retained
-  aesmap$y = colnames(plotdf)[3] #has to be positionally retained
-  aesmap = lapply(aesmap, function(x) paste0("`", x, "`"))
-  aesmap = do.call(ggplot2::aes_string, aesmap)
+  aesmap = aesmap[!names(aesmap) %in% c('x', 'y')] #remove x,y mappings if present
 
   #split aes params into those that are not aes i.e. static parametrisation
-  is_aes = unlist(sapply(aesmap, function(x) x[[2]])) %in% colnames(plotdf)
-  defaultmap = sapply(aesmap[!is_aes], function(x) x[[2]])
+  is_aes = sapply(aesmap, rlang::quo_is_symbolic)
+  defaultmap = lapply(aesmap[!is_aes], rlang::eval_tidy)
   aesmap = aesmap[is_aes]
+
+  # aes requires x & y to be explicit: https://github.com/tidyverse/ggplot2/issues/3176
+  x = rlang::sym(colnames(plotdf)[[2]])
+  y = rlang::sym(colnames(plotdf)[[3]])
 
   #add size if not present
   if (is.null(defaultmap$size))
     defaultmap$size = 2
 
-  p1 = ggplot2::ggplot(plotdf, aesmap) +
+  # tidystyle recommends no explicit return statements at end of functions
+  ggplot2::ggplot(plotdf, ggplot2::aes(!!x, !!y, !!!aesmap)) +
     ggplot2::geom_point() +
-    ggplot2::update_geom_defaults('point', defaultmap) +
-    vissE::bhuvad_theme(rl)
-
-  return(p1)
+    ggplot2::update_geom_defaults('point', defaultmap)
 }

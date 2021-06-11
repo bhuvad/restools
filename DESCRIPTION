@@ -10,12 +10,12 @@ Encoding: UTF-8
 LazyData: true
 Imports: 
     rmarkdown,
+    rlang,
     stringr,
     BiocStyle,
     plyr,
     desc,
     tools,
-    vissE,
     edgeR,
     limma,
     ggplot2,

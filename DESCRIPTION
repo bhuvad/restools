@@ -10,6 +10,7 @@ Encoding: UTF-8
 LazyData: true
 Imports: 
     rmarkdown,
+    rlang,
     stringr,
     BiocStyle,
     plyr,
@@ -23,3 +24,8 @@ Imports:
     Biobase,
     grDevices
 RoxygenNote: 7.1.1
+Suggests: 
+    testthat (>= 3.0.0),
+    emtdata,
+    ALL
+Config/testthat/edition: 3

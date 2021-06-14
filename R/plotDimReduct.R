@@ -1,3 +1,6 @@
+#' @import ggplot2
+NULL
+
 #' Compute and plot the results of a PCA analysis on gene expression data
 #'
 #' @param edata a DGEList, SummarizedExperiment or ExpressionSet object
@@ -14,7 +17,7 @@
 #' @examples
 #' se = emtdata::cursons2018_se()
 #' dge = emtdata::asDGEList(se)
-#' plotPCA(dge, colour = "Subline")
+#' plotPCA(dge, colour = Subline)
 #'
 setGeneric("plotPCA",
            function(edata,
@@ -95,7 +98,7 @@ setMethod("plotPCA",
 #' @examples
 #' se = emtdata::cursons2018_se()
 #' dge = emtdata::asDGEList(se)
-#' plotMDS(dge, colour = "Subline")
+#' plotMDS(dge, colour = Subline)
 #'
 setGeneric("plotMDS",
            function(edata,
@@ -206,32 +209,36 @@ addSampleAnnot <- function(plotdf, sdata) {
 }
 
 plotDR_intl <- function(drdf, sdata, rl, ...) {
-  #extract aes
-  aesmap = list(...)
 
   #annotate samples
   plotdf = addSampleAnnot(drdf, sdata)
 
+  #extract aes
+  aesmap = rlang::enquos(...)
   #compute plot
-  aesmap = aesmap[setdiff(names(aesmap), c('x', 'y'))] #remove x,y mappings if present
-  aesmap$x = colnames(plotdf)[2] #has to be positionally retained
-  aesmap$y = colnames(plotdf)[3] #has to be positionally retained
-  aesmap = lapply(aesmap, function(x) paste0("`", x, "`"))
-  aesmap = do.call(ggplot2::aes_string, aesmap)
+  aesmap = aesmap[!names(aesmap) %in% c('x', 'y')] #remove x,y mappings if present
 
   #split aes params into those that are not aes i.e. static parametrisation
-  is_aes = unlist(sapply(aesmap, function(x) x[[2]])) %in% colnames(plotdf)
-  defaultmap = sapply(aesmap[!is_aes], function(x) x[[2]])
-  aesmap = aesmap[is_aes]
+  if (length(aesmap) > 0) {
+    is_aes = sapply(aesmap, rlang::quo_is_symbolic)
+    defaultmap = lapply(aesmap[!is_aes], rlang::eval_tidy)
+    aesmap = aesmap[is_aes]
+  } else {
+    defaultmap = list()
+  }
+
+
+  # aes requires x & y to be explicit: https://github.com/tidyverse/ggplot2/issues/3176
+  x = rlang::sym(colnames(plotdf)[[2]])
+  y = rlang::sym(colnames(plotdf)[[3]])
 
   #add size if not present
   if (is.null(defaultmap$size))
     defaultmap$size = 2
 
-  p1 = ggplot2::ggplot(plotdf, aesmap) +
+  # tidystyle recommends no explicit return statements at end of functions
+  ggplot2::ggplot(plotdf, ggplot2::aes(!!x, !!y, !!!aesmap)) +
     ggplot2::geom_point() +
     ggplot2::update_geom_defaults('point', defaultmap) +
     vissE::bhuvad_theme(rl)
-
-  return(p1)
 }

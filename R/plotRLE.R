@@ -89,7 +89,7 @@ pdataRLE_intl <- function(emat, sampord) {
 orderSamples <- function(sdata, ordannots) {
   # tidyeval for lists is tricky. See here: https://stackoverflow.com/questions/48847456/
   # TODO: testing it works as expected
-  quo_list <- as.list(quo_squash(ordannots))[-1]
+  quo_list <- as.list(rlang::quo_squash(ordannots))[-1]
   #if no ordering provided, use default order
   if (length(args) == 0){
     ord = TRUE
@@ -105,7 +105,7 @@ plotRLE_intl <- function(plotdf, sdata, rl, ...) {
   dense_thresh = 50
 
   #extract aes
-  aesmap = enquos(...)
+  aesmap = rlang::enquos(...)
 
   #annotate samples
   plotdf = addSampleAnnot(plotdf, sdata)

@@ -237,7 +237,7 @@ jobs:
         run: |
           BiocCheck::BiocCheck(
               dir('check', 'tar.gz$', full.names = TRUE),
-              `quit-with-status` = ${{fail_on_biocCheck}},
+              `quit-with-status` = ${{ env.fail_on_biocCheck }},
               `no-check-R-ver` = TRUE,
               `no-check-bioc-help` = TRUE
           )

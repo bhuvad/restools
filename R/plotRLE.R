@@ -91,7 +91,7 @@ orderSamples <- function(sdata, ordannots) {
   # TODO: testing it works as expected
   quo_list <- as.list(rlang::quo_squash(ordannots))[-1]
   #if no ordering provided, use default order
-  if (length(args) == 0){
+  if (length(quo_list) == 0){
     ord = TRUE
   } else {
     ord = rlang::eval_tidy(rlang::expr(order(!!!quo_list)), data = sdata)

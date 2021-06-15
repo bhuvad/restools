@@ -12,8 +12,8 @@
 #' @examples
 #' se = emtdata::cursons2018_se()
 #' dge = emtdata::asDGEList(se)
-#' plotRLE(dge, colour = "Subline", lty = "Treatment", lwd = 2, ordannots =
-#' c("Subline", "Treatment"))
+#' plotRLE(dge, colour = Subline, lty = Treatment, lwd = 2, ordannots =
+#' c(Subline, Treatment))
 #'
 setGeneric("plotRLE",
            function(edata,
@@ -30,7 +30,7 @@ setMethod("plotRLE",
             #extract expression data (and transform)
             edata = edgeR::cpm(edata, log = TRUE)
             #create data structure
-            samporder = orderSamples(sdata, ordannots)
+            samporder = orderSamples(sdata, rlang::enquo(ordannots))
             rledf = pdataRLE_intl(edata, samporder)
             p1 = plotRLE_intl(rledf, sdata, rl, ...)
 
@@ -46,7 +46,7 @@ setMethod("plotRLE",
             #extract expression data (and transform)
             edata = Biobase::exprs(edata)
             #create data structure
-            samporder = orderSamples(sdata, ordannots)
+            samporder = orderSamples(sdata, rlang::enquo(ordannots))
             rledf = pdataRLE_intl(edata, samporder)
             p1 = plotRLE_intl(rledf, sdata, rl, ...)
 
@@ -62,7 +62,7 @@ setMethod("plotRLE",
             #extract expression data (and transform)
             edata = SummarizedExperiment::assay(edata)
             #create data structure
-            samporder = orderSamples(sdata, ordannots)
+            samporder = orderSamples(sdata, rlang::enquo(ordannots))
             rledf = pdataRLE_intl(edata, samporder)
             p1 = plotRLE_intl(rledf, sdata, rl, ...)
 
@@ -87,13 +87,15 @@ pdataRLE_intl <- function(emat, sampord) {
 }
 
 orderSamples <- function(sdata, ordannots) {
-  stopifnot(all(ordannots %in% colnames(sdata)))
-
+  # tidyeval for lists is tricky. See here: https://stackoverflow.com/questions/48847456/
+  # TODO: testing it works as expected
+  quo_list <- as.list(quo_squash(ordannots))[-1]
   #if no ordering provided, use default order
-  if (length(ordannots) == 0)
+  if (length(args) == 0){
     ord = TRUE
-  else
-    ord = order(apply(sdata[, ordannots, drop = FALSE], 1, paste, collapse = '_'))
+  } else {
+    ord = rlang::eval_tidy(rlang::expr(order(!!!quo_list)), data = sdata)
+  }
 
   return(rownames(sdata)[ord])
 }

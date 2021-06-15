@@ -38,7 +38,7 @@ Compute and plot relative log expression (RLE) values of gene expression data
 \examples{
 se = emtdata::cursons2018_se()
 dge = emtdata::asDGEList(se)
-plotRLE(dge, colour = "Subline", lty = "Treatment", lwd = 2, ordannots =
-c("Subline", "Treatment"))
+plotRLE(dge, colour = Subline, lty = Treatment, lwd = 2, ordannots =
+c(Subline, Treatment))
 
 }

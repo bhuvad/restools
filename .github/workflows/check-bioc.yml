@@ -35,6 +35,8 @@ name: BiocCheck
 ## "/nocache" in the commit message.
 env:
   has_testthat: 'true'
+  run_biocCheck: 'true'
+  fail_on_biocCheck: 'FALSE' # must be in caps
   run_covr: 'false'
   run_pkgdown: 'false'
   has_RUnit: 'false'
@@ -231,10 +233,11 @@ jobs:
         shell: Rscript {0}
 
       - name: Run BiocCheck
+        if:  env.run_biocCheck == 'true'
         run: |
           BiocCheck::BiocCheck(
               dir('check', 'tar.gz$', full.names = TRUE),
-              `quit-with-status` = TRUE,
+              `quit-with-status` = ${{fail_on_biocCheck}},
               `no-check-R-ver` = TRUE,
               `no-check-bioc-help` = TRUE
           )

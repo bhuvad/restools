@@ -103,29 +103,28 @@ plotRLE_intl <- function(plotdf, sdata, rl, ...) {
   dense_thresh = 50
 
   #extract aes
-  aesmap = list(...)
+  aesmap = enquos(...)
 
   #annotate samples
   plotdf = addSampleAnnot(plotdf, sdata)
 
   #compute plot
-  aesmap$x = 'x'
-  aesmap$ymin = 'ymin'
-  aesmap$ymax = 'ymax'
-  aesmap$upper = 'upper'
-  aesmap$middle = 'middle'
-  aesmap$lower = 'lower'
-  aesmap = lapply(aesmap, function(x) paste0("`", x, "`"))
-  aesmap = do.call(ggplot2::aes_string, aesmap)
+  aesmap = aesmap[!names(aesmap) %in% c('x', 'ymin', 'ymin', 'upper', 'middle', 'lower')] #remove fixed mappings if present
 
   #split aes params into those that are not aes i.e. static parametrisation
-  is_aes = unlist(sapply(aesmap, function(x) x[[2]])) %in% colnames(plotdf)
-  defaultmap = sapply(aesmap[!is_aes], function(x) x[[2]])
-  aesmap = aesmap[is_aes]
+  if (length(aesmap) > 0) {
+    is_aes = sapply(aesmap, rlang::quo_is_symbolic)
+    defaultmap = lapply(aesmap[!is_aes], rlang::eval_tidy)
+    aesmap = aesmap[is_aes]
+  } else {
+    defaultmap = list()
+  }
 
   #build plot
-  p1 = ggplot2::ggplot(plotdf, aes(x = x, group = x)) +
-    ggplot2::geom_boxplot(aesmap, stat = 'identity') +
+  p1 = ggplot2::ggplot(plotdf, aes(x = x, y=middle, group = x, !!!aesmap)) +
+    ggplot2::geom_boxplot(
+      aes(ymin = ymin, ymax = ymax, upper = upper, middle = middle, lower = lower),
+      stat = 'identity') +
     ggplot2::geom_hline(yintercept = 0, colour = 2, lty = 2) +
     ggplot2::ylab('Relative log expression') +
     ggplot2::update_geom_defaults('boxplot', defaultmap) +
@@ -134,12 +133,8 @@ plotRLE_intl <- function(plotdf, sdata, rl, ...) {
 
   #update plot if too many samples are plot
   if (nrow(plotdf) > dense_thresh) {
-    aesmap_pt = setdiff(names(aesmap), c('ymin', 'ymax', 'upper', 'lower'))
-    aesmap_pt = aesmap[aesmap_pt]
-    #map middle to y
-    names(aesmap_pt)[names(aesmap_pt) %in% 'middle'] = 'y'
-    p1 = p1 +
-      ggplot2::geom_point(aesmap_pt)
+    ## geom_point will inherit relevant aesthetics from top `aes`, include y=middle
+    p1 = p1 +  ggplot2::geom_point()
   }
 
   return(p1)
@@ -180,7 +175,7 @@ plotRLEtm <- function(dge, clrannot, ordannots = NA, rl = 1) {
     geom_hline(yintercept = 0, colour = 2, lty = 2) +
     xlab('Tissue') +
     ylab('Relative log expression') +
-    vissE::bhuvad_theme(rl) +
+    # vissE::bhuvad_theme(rl) +
     theme(axis.text.x = element_blank())
 
   return(p1)

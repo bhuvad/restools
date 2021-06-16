@@ -22,7 +22,8 @@ Imports:
     ggplot2,
     SummarizedExperiment,
     Biobase,
-    grDevices
+    grDevices,
+    dplyr
 RoxygenNote: 7.1.1
 Suggests: 
     testthat (>= 3.0.0),

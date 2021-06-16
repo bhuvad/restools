@@ -18,6 +18,16 @@ test_that("plotRLE works with Eset", {
   p <- plotRLE(ALL, color=age > 50, shape=sex)
   expect_error(print(p), NA)
 
+  #order with one column
+  p <- plotRLE(ALL, ordannots=age)
+  expect_silent(print(p))
+  p <- plotRLE(ALL, ordannots=c(age))
+  expect_silent(print(p))
+
+  #order with multiple columns
+  p <- plotRLE(ALL, ordannots=c(sex, age))
+  expect_silent(print(p))
+
   #error when the column is not in the data
   p <- plotRLE(ALL, color=age2)
   expect_error(

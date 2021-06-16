@@ -1,3 +1,6 @@
+#' @importFrom dplyr %>%
+NULL
+
 #' Compute and plot relative log expression (RLE) values of gene expression data
 #'
 #' @param ordannots a character, specifying the annotations to use to order
@@ -58,7 +61,7 @@ setMethod("plotRLE",
           signature('SummarizedExperiment','ANY', 'ANY'),
           function(edata, ordannots, rl, ...){
             #extract sample data
-            sdata = SummarizedExperiment::colData(edata)
+            sdata = BiocGenerics::as.data.frame(SummarizedExperiment::colData(edata))
             #extract expression data (and transform)
             edata = SummarizedExperiment::assay(edata)
             #create data structure
@@ -87,17 +90,15 @@ pdataRLE_intl <- function(emat, sampord) {
 }
 
 orderSamples <- function(sdata, ordannots) {
-  # tidyeval for lists is tricky. See here: https://stackoverflow.com/questions/48847456/
-  # TODO: testing it works as expected
-  quo_list <- as.list(rlang::quo_squash(ordannots))[-1]
-  #if no ordering provided, use default order
-  if (length(quo_list) == 0){
-    ord = TRUE
-  } else {
-    ord = rlang::eval_tidy(rlang::expr(order(!!!quo_list)), data = sdata)
-  }
+  #add sample IDs
+  sdata$SampleOrderID = rownames(sdata)
 
-  return(rownames(sdata)[ord])
+  #order samples based on provided annotations
+  sdata = sdata %>%
+    dplyr::group_by(dplyr::across(!!ordannots)) %>%
+    dplyr::arrange(.by_group = TRUE)
+
+  return(sdata$SampleOrderID)
 }
 
 plotRLE_intl <- function(plotdf, sdata, rl, ...) {
@@ -138,47 +139,6 @@ plotRLE_intl <- function(plotdf, sdata, rl, ...) {
     ## geom_point will inherit relevant aesthetics from top `aes`, include y=middle
     p1 = p1 +  ggplot2::geom_point()
   }
-
-  return(p1)
-}
-
-plotRLEtm <- function(dge, clrannot, ordannots = NA, rl = 1) {
-  stopifnot(clrannot %in% colnames(dge$samples))
-  if (is.na(ordannots)) ordannots = clrannot
-  stopifnot(ordannots %in% colnames(dge$samples))
-
-  #compute RLE
-  rle = edgeR::cpm(dge, log = TRUE)
-  rle = rle - rowMedians(rle)
-  #order samples
-  rle = rle[, order(apply(dge$samples[, ordannots], 1, paste, collapse = '_'))]
-
-  #compute boxplot
-  rledf = t(apply(rle, 2, function(x) boxplot.stats(x)$stats))
-  rledf = as.data.frame(rledf)
-  colnames(rledf) = c('ymin', 'lower', 'middle', 'upper', 'ymax')
-  rledf = cbind(rledf, dge$samples[rownames(rledf), clrannot, drop = FALSE])
-  rledf$x = 1:nrow(rledf)
-  p1 = ggplot(rledf, aes(x = x, group = x)) +
-    geom_boxplot(
-      aes_string(
-        ymin = 'ymin',
-        lower = 'lower',
-        middle = 'middle',
-        upper = 'upper',
-        ymax = 'ymax',
-        colour = clrannot,
-      ),
-      alpha = 0.5,
-      lwd = 0.25,
-      stat = 'identity'
-    ) +
-    geom_point(aes_string(y = 'middle', colour = clrannot)) +
-    geom_hline(yintercept = 0, colour = 2, lty = 2) +
-    xlab('Tissue') +
-    ylab('Relative log expression') +
-    # vissE::bhuvad_theme(rl) +
-    theme(axis.text.x = element_blank())
 
   return(p1)
 }

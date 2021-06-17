@@ -3,7 +3,7 @@ Title: Research tools for data science projects
 Version: 0.0.0.9000
 Authors@R: person("Dharmesh", "Bhuva", email = "bhuva.d@wehi.edu.au", role = c("aut", "cre"), comment = c(ORCID = '0000-0002-6398-9157'))
 Description: Provides a set of tools to create and manage data science projects
-Depends: R (>= 3.5.0),
+Depends: R (>= 4.1.0),
     rmarkdown
 License: GPL-3
 Encoding: UTF-8

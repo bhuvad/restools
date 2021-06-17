@@ -3,10 +3,7 @@ NULL
 
 #' Compute and plot relative log expression (RLE) values of gene expression data
 #'
-#' @param ordannots a character, specifying the annotations to use to order
-#'   samples. Samples are ordered successively using each annotation. If the
-#'   columns to use are "A" and "B" (from the annotation table), samples are
-#'   first ordered using "A" and then "B" within each category of "A".
+#' @param ordannots variables or computations to sort samples by (tidy style).
 #'
 #' @inheritParams plotPCA
 #' @return a ggplot2 object, containing the RLE plot.

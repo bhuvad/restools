@@ -19,10 +19,7 @@ plotRLE(edata, ordannots = c(), rl = 1, ...)
 \item{edata}{a DGEList, SummarizedExperiment or ExpressionSet object
 containing gene expression data.}
 
-\item{ordannots}{a character, specifying the annotations to use to order
-samples. Samples are ordered successively using each annotation. If the
-columns to use are "A" and "B" (from the annotation table), samples are
-first ordered using "A" and then "B" within each category of "A".}
+\item{ordannots}{variables or computations to sort samples by (tidy style).}
 
 \item{rl}{a numeric, specifying the relative scale factor to apply to text on
 the plot.}

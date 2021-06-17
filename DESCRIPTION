@@ -23,7 +23,11 @@ Imports:
     SummarizedExperiment,
     Biobase,
     grDevices,
-    dplyr
+    dplyr,
+    stats,
+    ComplexHeatmap,
+    circlize,
+    scico
 RoxygenNote: 7.1.1
 Suggests: 
     testthat (>= 3.0.0),

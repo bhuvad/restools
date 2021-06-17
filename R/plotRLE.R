@@ -124,7 +124,7 @@ plotRLE_intl <- function(plotdf, sdata, rl, ...) {
   }
 
   #build plot
-  p1 = ggplot2::ggplot(plotdf, aes(x = x, y=middle, group = x, !!!aesmap)) +
+  p1 = ggplot2::ggplot(plotdf, aes(x = x, y = middle, group = x, !!!aesmap)) +
     ggplot2::geom_boxplot(
       aes(ymin = ymin, ymax = ymax, upper = upper, middle = middle, lower = lower),
       stat = 'identity') +
@@ -137,7 +137,7 @@ plotRLE_intl <- function(plotdf, sdata, rl, ...) {
   #update plot if too many samples are plot
   if (nrow(plotdf) > dense_thresh) {
     ## geom_point will inherit relevant aesthetics from top `aes`, include y=middle
-    p1 = p1 +  ggplot2::geom_point()
+    p1 = p1 + ggplot2::geom_point()
   }
 
   return(p1)

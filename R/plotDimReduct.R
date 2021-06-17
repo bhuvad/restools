@@ -209,7 +209,6 @@ addSampleAnnot <- function(plotdf, sdata) {
 }
 
 plotDR_intl <- function(drdf, sdata, rl, ...) {
-
   #annotate samples
   plotdf = addSampleAnnot(drdf, sdata)
 
@@ -226,7 +225,6 @@ plotDR_intl <- function(drdf, sdata, rl, ...) {
   } else {
     defaultmap = list()
   }
-
 
   # aes requires x & y to be explicit: https://github.com/tidyverse/ggplot2/issues/3176
   x = rlang::sym(colnames(plotdf)[[2]])

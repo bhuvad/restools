@@ -34,7 +34,7 @@ setMethod("plotPCA",
             if (is.null(precomputed)) {
               pcdata = stats::prcomp(t(edgeR::cpm(edata, log = TRUE)))
             } else {
-              pcdata = checkPrecomputedPCA(precomputed)
+              pcdata = checkPrecomputedPCA(edata, precomputed)
             }
 
             #extract sample data
@@ -54,7 +54,7 @@ setMethod("plotPCA",
             if (is.null(precomputed)) {
               pcdata = stats::prcomp(t(Biobase::exprs(edata)))
             } else {
-              pcdata = checkPrecomputedPCA(precomputed)
+              pcdata = checkPrecomputedPCA(edata, precomputed)
             }
 
             #extract sample data
@@ -74,7 +74,7 @@ setMethod("plotPCA",
             if (is.null(precomputed)) {
               pcdata = stats::prcomp(t(SummarizedExperiment::assay(edata)))
             } else {
-              pcdata = checkPrecomputedPCA(precomputed)
+              pcdata = checkPrecomputedPCA(edata, precomputed)
             }
 
             #extract sample data
@@ -115,7 +115,7 @@ setMethod("plotMDS",
             if (is.null(precomputed)) {
               mdsdata = limma::plotMDS(edata, plot = FALSE)
             } else {
-              mdsdata = checkPrecomputedMDS(precomputed)
+              mdsdata = checkPrecomputedMDS(edata, precomputed)
             }
 
             #extract sample data
@@ -135,7 +135,7 @@ setMethod("plotMDS",
             if (is.null(precomputed)) {
               mdsdata = limma::plotMDS(edata, plot = FALSE)
             } else {
-              mdsdata = checkPrecomputedMDS(precomputed)
+              mdsdata = checkPrecomputedMDS(edata, precomputed)
             }
 
             #extract sample data
@@ -155,7 +155,7 @@ setMethod("plotMDS",
             if (is.null(precomputed)) {
               mdsdata = limma::plotMDS(SummarizedExperiment::assay(edata), plot = FALSE)
             } else {
-              mdsdata = checkPrecomputedMDS(precomputed)
+              mdsdata = checkPrecomputedMDS(edata, precomputed)
             }
 
             #extract sample data

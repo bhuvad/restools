@@ -34,7 +34,7 @@ setMethod("plotPCA",
             if (is.null(precomputed)) {
               pcdata = stats::prcomp(t(edgeR::cpm(edata, log = TRUE)))
             } else {
-              pcdata = precomputed
+              pcdata = checkPrecomputedPCA(precomputed)
             }
 
             #extract sample data
@@ -54,7 +54,7 @@ setMethod("plotPCA",
             if (is.null(precomputed)) {
               pcdata = stats::prcomp(t(Biobase::exprs(edata)))
             } else {
-              pcdata = precomputed
+              pcdata = checkPrecomputedPCA(precomputed)
             }
 
             #extract sample data
@@ -74,7 +74,7 @@ setMethod("plotPCA",
             if (is.null(precomputed)) {
               pcdata = stats::prcomp(t(SummarizedExperiment::assay(edata)))
             } else {
-              pcdata = precomputed
+              pcdata = checkPrecomputedPCA(precomputed)
             }
 
             #extract sample data
@@ -115,7 +115,7 @@ setMethod("plotMDS",
             if (is.null(precomputed)) {
               mdsdata = limma::plotMDS(edata, plot = FALSE)
             } else {
-              mdsdata = precomputed
+              mdsdata = checkPrecomputedMDS(precomputed)
             }
 
             #extract sample data
@@ -135,7 +135,7 @@ setMethod("plotMDS",
             if (is.null(precomputed)) {
               mdsdata = limma::plotMDS(edata, plot = FALSE)
             } else {
-              mdsdata = precomputed
+              mdsdata = checkPrecomputedMDS(precomputed)
             }
 
             #extract sample data
@@ -155,7 +155,7 @@ setMethod("plotMDS",
             if (is.null(precomputed)) {
               mdsdata = limma::plotMDS(SummarizedExperiment::assay(edata), plot = FALSE)
             } else {
-              mdsdata = precomputed
+              mdsdata = checkPrecomputedMDS(precomputed)
             }
 
             #extract sample data
@@ -167,10 +167,25 @@ setMethod("plotMDS",
             return(p1)
           })
 
+checkPrecomputedPCA <- function(edata, pcdata) {
+  stopifnot(
+    is(pcdata, 'prcomp'),
+    all(rownames(pcdata$x) == colnames(edata))
+  )
+  return(pcdata)
+}
+
+checkPrecomputedMDS <- function(edata, mdsdata) {
+  stopifnot(
+    is(mdsdata, 'MDS'),
+    all(rownames(mdsdata$distance.matrix.squared) == colnames(edata))
+  )
+  return(mdsdata)
+}
+
 #plot data preparation using PCA results
 pdataPC_intl <- function(pcdata, dims) {
   stopifnot(length(dims) == 2)
-  stopifnot(is(pcdata, 'prcomp'))
 
   plotdf = data.frame(
     'RestoolsMtchID' = rownames(pcdata$x),
@@ -187,7 +202,6 @@ pdataPC_intl <- function(pcdata, dims) {
 #plot data preparation using MDS results
 pdataMDS_intl <- function(mdsdata, dims) {
   stopifnot(length(dims) == 2)
-  stopifnot(is(mdsdata, 'MDS'))
 
   lambda = pmax(mdsdata$eigen.values, 0)
   plotdf = data.frame(

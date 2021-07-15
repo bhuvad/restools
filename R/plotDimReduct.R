@@ -78,7 +78,7 @@ setMethod("plotPCA",
             }
 
             #extract sample data
-            sdata = BiocGenerics::as.data.frame(SummarizedExperiment::colData(edata))
+            sdata = BiocGenerics::as.data.frame(SummarizedExperiment::colData(edata), optional = TRUE)
             #create data structure
             drdf = pdataPC_intl(pcdata, dims)
             p1 = plotDR_intl(drdf, sdata, rl, ...)

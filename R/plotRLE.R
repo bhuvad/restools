@@ -58,7 +58,7 @@ setMethod("plotRLE",
           signature('SummarizedExperiment','ANY', 'ANY'),
           function(edata, ordannots, rl, ...){
             #extract sample data
-            sdata = BiocGenerics::as.data.frame(SummarizedExperiment::colData(edata))
+            sdata = BiocGenerics::as.data.frame(SummarizedExperiment::colData(edata), optional = TRUE)
             #extract expression data (and transform)
             edata = SummarizedExperiment::assay(edata)
             #create data structure

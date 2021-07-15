@@ -159,7 +159,7 @@ setMethod("plotMDS",
             }
 
             #extract sample data
-            sdata = BiocGenerics::as.data.frame(SummarizedExperiment::colData(edata))
+            sdata = BiocGenerics::as.data.frame(SummarizedExperiment::colData(edata), optional = TRUE)
             #create data structure
             drdf = pdataMDS_intl(mdsdata, dims)
             p1 = plotDR_intl(drdf, sdata, rl, ...)

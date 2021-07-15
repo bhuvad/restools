@@ -69,7 +69,7 @@ setMethod("explorePCVariability",
             }
 
             #extract sample data
-            sdata = BiocGenerics::as.data.frame(SummarizedExperiment::colData(edata))
+            sdata = BiocGenerics::as.data.frame(SummarizedExperiment::colData(edata), optional = TRUE)
             sdata = extractAnnots(sdata, rlang::enquo(annots))
             #create data structure
             drmat = pmatPC_intl(pcdata, maxdim)

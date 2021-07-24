@@ -14,6 +14,9 @@
 #' # getCytoscapeLayout()
 #'
 getCytoscapeLayout <- function(normalise = TRUE) {
+  if (!requireNamespace('RCy3', quietly = TRUE))
+    stop('This function requires the "RCy3" R package.')
+
   #check whether cythoscape is running or not
   RCy3::cytoscapePing()
 

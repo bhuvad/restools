@@ -2,6 +2,7 @@
 
 export(createDSProject)
 export(explorePCVariability)
+export(getCytoscapeLayout)
 export(plotMDS)
 export(plotPCA)
 export(plotRLE)

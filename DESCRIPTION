@@ -36,5 +36,9 @@ Suggests:
     testthat (>= 3.0.0),
     emtdata,
     ALL,
-    RCy3
+    RCy3,
+    xml2,
+    httr,
+    igraph,
+    diffusr
 Config/testthat/edition: 3

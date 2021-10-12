@@ -1,4 +1,4 @@
-diffusePubmedNetwork <- function(pmgraph, ids, weights = c('equal', 'cites'), r = 0.5, correct.for.hubs = TRUE) {
+diffusePubmedNetwork <- function(pmgraph, ids, weights = c('equal', 'cites'), r = 0.5, correct.for.hubs = TRUE, niter = 10000) {
   checkInstalled('diffusr')
   checkInstalled('igraph')
   weights = match.arg(weights)
@@ -16,18 +16,22 @@ diffusePubmedNetwork <- function(pmgraph, ids, weights = c('equal', 'cites'), r 
 
   #perform RWR
   amat = igraph::as_adj(igraph::as.undirected(pmgraph), sparse = FALSE)
-  pt = diffusr::random.walk(p0, amat, r = r, correct.for.hubs)
+  pt = diffusr::random.walk(p0, amat, r = r, correct.for.hubs, niter = niter)
   pt = pt$p.inf[, 1]
   names(pt) = names(p0)
 
   return(pt)
 }
 
-createPubmedNetwork <- function(pmdf, email, filter.degree = 1) {
-  checkInstalled('igraph')
+createPubmedNetwork <- function(pmdf, email, filter.degree = 0) {
 
   #get neighbourhood and create a graph
   pmgraph = igraph::graph_from_data_frame(pmdf)
+
+  if (filter.degree > 0) {
+    deg = igraph::degree(pmgraph)
+    pmgraph = igraph::induced_subgraph(pmgraph, names(deg)[deg > filter.degree])
+  }
 
   return(pmgraph)
 }

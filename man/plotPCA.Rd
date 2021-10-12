@@ -2,24 +2,27 @@
 % Please edit documentation in R/plotDimReduct.R
 \name{plotPCA}
 \alias{plotPCA}
-\alias{plotPCA,DGEList-method}
-\alias{plotPCA,ExpressionSet-method}
-\alias{plotPCA,SummarizedExperiment-method}
+\alias{plotPCA,DGEList,ANY,missing-method}
+\alias{plotPCA,ExpressionSet,ANY,missing-method}
+\alias{plotPCA,SummarizedExperiment,ANY,ANY-method}
 \title{Compute and plot the results of a PCA analysis on gene expression data}
 \usage{
-plotPCA(edata, dims = c(1, 2), precomputed = NULL, rl = 1, ...)
+plotPCA(edata, dims = c(1, 2), assay = 1, precomputed = NULL, rl = 1, ...)
 
-\S4method{plotPCA}{DGEList}(edata, dims = c(1, 2), precomputed = NULL, rl = 1, ...)
+\S4method{plotPCA}{DGEList,ANY,missing}(edata, dims = c(1, 2), assay = 1, precomputed = NULL, rl = 1, ...)
 
-\S4method{plotPCA}{ExpressionSet}(edata, dims = c(1, 2), precomputed = NULL, rl = 1, ...)
+\S4method{plotPCA}{ExpressionSet,ANY,missing}(edata, dims = c(1, 2), assay = 1, precomputed = NULL, rl = 1, ...)
 
-\S4method{plotPCA}{SummarizedExperiment}(edata, dims = c(1, 2), precomputed = NULL, rl = 1, ...)
+\S4method{plotPCA}{SummarizedExperiment,ANY,ANY}(edata, dims = c(1, 2), assay = 1, precomputed = NULL, rl = 1, ...)
 }
 \arguments{
 \item{edata}{a DGEList, SummarizedExperiment or ExpressionSet object
 containing gene expression data.}
 
 \item{dims}{a numeric, containing 2 values specifying the dimensions to plot.}
+
+\item{assay}{a numeric or character, specifying the assay to use (for
+SummarizedExperiment).}
 
 \item{precomputed}{a dimensional reduction results from `stats::prcomp`.}
 

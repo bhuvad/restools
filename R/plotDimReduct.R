@@ -6,6 +6,8 @@ NULL
 #' @param edata a DGEList, SummarizedExperiment or ExpressionSet object
 #'   containing gene expression data.
 #' @param dims a numeric, containing 2 values specifying the dimensions to plot.
+#' @param assay a numeric or character, specifying the assay to use (for
+#'   SummarizedExperiment).
 #' @param precomputed a dimensional reduction results from `stats::prcomp`.
 #' @param rl a numeric, specifying the relative scale factor to apply to text on
 #'   the plot.
@@ -22,17 +24,18 @@ NULL
 setGeneric("plotPCA",
            function(edata,
                     dims = c(1, 2),
+                    assay = 1,
                     precomputed = NULL,
                     rl = 1,
                     ...) standardGeneric("plotPCA"))
 
 #' @rdname plotPCA
 setMethod("plotPCA",
-          signature('DGEList','ANY', 'ANY', 'ANY'),
-          function(edata, dims, precomputed, rl, ...){
+          signature('DGEList','ANY', 'missing', 'ANY', 'ANY'),
+          function(edata, dims, assay, precomputed, rl, ...){
             #compute PCA
             if (is.null(precomputed)) {
-              pcdata = stats::prcomp(t(edgeR::cpm(edata, log = TRUE)))
+              pcdata = calcPCA(edgeR::cpm(edata, log = TRUE), dims)
             } else {
               pcdata = checkPrecomputedPCA(edata, precomputed)
             }
@@ -48,11 +51,11 @@ setMethod("plotPCA",
 
 #' @rdname plotPCA
 setMethod("plotPCA",
-          signature('ExpressionSet','ANY', 'ANY', 'ANY'),
-          function(edata, dims, precomputed, rl, ...){
+          signature('ExpressionSet','ANY', 'missing', 'ANY', 'ANY'),
+          function(edata, dims, assay, precomputed, rl, ...){
             #compute PCA
             if (is.null(precomputed)) {
-              pcdata = stats::prcomp(t(Biobase::exprs(edata)))
+              pcdata = calcPCA(Biobase::exprs(edata), dims)
             } else {
               pcdata = checkPrecomputedPCA(edata, precomputed)
             }
@@ -68,11 +71,11 @@ setMethod("plotPCA",
 
 #' @rdname plotPCA
 setMethod("plotPCA",
-          signature('SummarizedExperiment','ANY', 'ANY', 'ANY'),
-          function(edata, dims, precomputed, rl, ...){
+          signature('SummarizedExperiment', 'ANY', 'ANY', 'ANY', 'ANY'),
+          function(edata, dims, assay, precomputed, rl, ...){
             #compute PCA
             if (is.null(precomputed)) {
-              pcdata = stats::prcomp(t(SummarizedExperiment::assay(edata)))
+              pcdata = calcPCA(SummarizedExperiment::assay(edata, assay), dims)
             } else {
               pcdata = checkPrecomputedPCA(edata, precomputed)
             }
@@ -167,11 +170,35 @@ setMethod("plotMDS",
             return(p1)
           })
 
+calcPCA <- function(edata, dims) {
+  maxdim = max(dims)
+  if (requireNamespace('scater', quietly = TRUE) & maxdim < ncol(edata)) {
+    pcdata = scater::calculatePCA(edata, ncomponents = maxdim)
+  } else {
+    pcdata = stats::prcomp(t(edata))
+    pcdata = checkPrecomputedPCA(edata, pcdata)
+  }
+
+  return(pcdata)
+}
+
 checkPrecomputedPCA <- function(edata, pcdata) {
-  stopifnot(
-    is(pcdata, 'prcomp'),
-    all(rownames(pcdata$x) == colnames(edata))
-  )
+  if (is(pcdata, 'prcomp')) {
+    stopifnot(all(rownames(pcdata$x) == colnames(edata)))
+
+    #prepare results
+    pvar = pcdata$sdev ^ 2 / sum(pcdata$sdev ^ 2) * 100
+    rot = pcdata$rotation
+    pcdata = pcdata$x
+    attr(pcdata, 'percentVar') = pvar
+    attr(pcdata, 'rotation') = rot
+  } else if(is(pcdata, 'matrix')) {
+    stopifnot(all(rownames(pcdata) == colnames(edata)))
+    stopifnot(c('dim', 'dimnames', 'varExplained', 'percentVar', 'rotation') %in% names(attributes(pcdata)))
+  } else {
+    stop('provide results from prcomp or scater::calculatePCA')
+  }
+
   return(pcdata)
 }
 
@@ -188,11 +215,11 @@ pdataPC_intl <- function(pcdata, dims) {
   stopifnot(length(dims) == 2)
 
   plotdf = data.frame(
-    'RestoolsMtchID' = rownames(pcdata$x),
-    x = pcdata$x[, dims[1]],
-    y = pcdata$x[, dims[2]]
+    'RestoolsMtchID' = rownames(pcdata),
+    x = pcdata[, dims[1]],
+    y = pcdata[, dims[2]]
   )
-  pca_prop = round(pcdata$sdev ^ 2 / sum(pcdata$sdev ^ 2) * 100, digits = 2)
+  pca_prop = round(attr(pcdata, 'percentVar'), digits = 2)
   pca_labs = paste0('PC', 1:length(pca_prop), ' (', pca_prop, '%)')
   colnames(plotdf)[-1] = pca_labs[dims]
 

@@ -25,7 +25,7 @@ setMethod("explorePCVariability",
           function(edata, annots, maxdim, precomputed){
             #compute PCA
             if (is.null(precomputed)) {
-              pcdata = stats::prcomp(t(edgeR::cpm(edata, log = TRUE)))
+              pcdata = calcPCA(edgeR::cpm(edata, log = TRUE), maxdim)
             } else {
               pcdata = checkPrecomputedPCA(edata, precomputed)
             }
@@ -44,7 +44,7 @@ setMethod("explorePCVariability",
           function(edata, annots, maxdim, precomputed){
             #compute PCA
             if (is.null(precomputed)) {
-              pcdata = stats::prcomp(t(Biobase::exprs(edata)))
+              pcdata = calcPCA(Biobase::exprs(edata), maxdim)
             } else {
               pcdata = checkPrecomputedPCA(edata, precomputed)
             }
@@ -63,7 +63,7 @@ setMethod("explorePCVariability",
           function(edata, annots, maxdim, precomputed){
             #compute PCA
             if (is.null(precomputed)) {
-              pcdata = stats::prcomp(t(SummarizedExperiment::assay(edata)))
+              pcdata = calcPCA(SummarizedExperiment::assay(edata), maxdim)
             } else {
               pcdata = checkPrecomputedPCA(edata, precomputed)
             }
@@ -89,17 +89,16 @@ extractAnnots <- function(sdata, annots) {
 }
 
 pmatPC_intl <- function(pcdata, maxdim) {
-  maxdim = min(maxdim, length(pcdata$sdev))
+  maxdim = min(maxdim, ncol(pcdata))
 
   #generate labels
-  pca_prop = round(pcdata$sdev ^ 2 / sum(pcdata$sdev ^ 2) * 100, digits = 2)
+  pca_prop = round(attr(pcdata, 'percentVar'), digits = 2)
   pca_labs = paste0('PC', 1:length(pca_prop), ' (', pca_prop, '%)')
   #extract projection data
-  pcmat = pcdata$x
-  colnames(pcmat) = pca_labs
-  pcmat = pcmat[, 1:maxdim]
+  colnames(pcdata) = pca_labs
+  pcdata = pcdata[, 1:maxdim]
 
-  return(pcmat)
+  return(pcdata)
 }
 
 exploreDRVariability_intl <- function(drmat, sdata) {
@@ -132,7 +131,7 @@ exploreDRVariability_intl <- function(drmat, sdata) {
   )
 
   #heatmap colours
-  colsat = as.numeric(stats::quantile(-log10(plotmat[plotmat < 0.01]), 0.75))
+  colsat = as.numeric(stats::quantile(-log10(plotmat[plotmat < 0.01 & plotmat > 0]), 0.75))
   colsat = ifelse(is.na(colsat), 2, colsat)
   cols = c('#FFFFFF', scico::scico(30, palette = 'acton', direction = -1))
   hm_colmap = circlize::colorRamp2(seq(0, colsat, length.out = 31), cols)

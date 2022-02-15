@@ -2,18 +2,24 @@
 % Please edit documentation in R/plotDimReduct.R
 \name{plotPCA}
 \alias{plotPCA}
-\alias{plotPCA,DGEList,ANY,missing-method}
-\alias{plotPCA,ExpressionSet,ANY,missing-method}
-\alias{plotPCA,SummarizedExperiment,ANY,ANY-method}
+\alias{plotPCA,DGEList-method}
+\alias{plotPCA,ExpressionSet-method}
+\alias{plotPCA,SummarizedExperiment-method}
+\alias{plotPCA,SingleCellExperiment-method}
+\alias{plotPCA,SpatialExperiment-method}
 \title{Compute and plot the results of a PCA analysis on gene expression data}
 \usage{
-plotPCA(edata, dims = c(1, 2), assay = 1, precomputed = NULL, rl = 1, ...)
+plotPCA(edata, dims = c(1, 2), ...)
 
-\S4method{plotPCA}{DGEList,ANY,missing}(edata, dims = c(1, 2), assay = 1, precomputed = NULL, rl = 1, ...)
+\S4method{plotPCA}{DGEList}(edata, dims, precomputed = NULL, rl = 1, ...)
 
-\S4method{plotPCA}{ExpressionSet,ANY,missing}(edata, dims = c(1, 2), assay = 1, precomputed = NULL, rl = 1, ...)
+\S4method{plotPCA}{ExpressionSet}(edata, dims, precomputed = NULL, rl = 1, ...)
 
-\S4method{plotPCA}{SummarizedExperiment,ANY,ANY}(edata, dims = c(1, 2), assay = 1, precomputed = NULL, rl = 1, ...)
+\S4method{plotPCA}{SummarizedExperiment}(edata, dims, assay = 1, precomputed = NULL, rl = 1, ...)
+
+\S4method{plotPCA}{SingleCellExperiment}(edata, dims, dimred = "PCA", rl = 1, ...)
+
+\S4method{plotPCA}{SpatialExperiment}(edata, dims, dimred = "PCA", rl = 1, ...)
 }
 \arguments{
 \item{edata}{a DGEList, SummarizedExperiment or ExpressionSet object
@@ -21,15 +27,18 @@ containing gene expression data.}
 
 \item{dims}{a numeric, containing 2 values specifying the dimensions to plot.}
 
-\item{assay}{a numeric or character, specifying the assay to use (for
-SummarizedExperiment).}
+\item{...}{aesthetic mappings to pass to `ggplot2::aes_string()`.}
 
 \item{precomputed}{a dimensional reduction results from `stats::prcomp`.}
 
 \item{rl}{a numeric, specifying the relative scale factor to apply to text on
 the plot.}
 
-\item{...}{aesthetic mappings to pass to `ggplot2::aes_string()`.}
+\item{assay}{a numeric or character, specifying the assay to use (for
+SummarizedExperiment).}
+
+\item{dimred}{a string or integer scalar indicating the reduced dimension
+result in `reducedDims(object)` to plot.}
 }
 \value{
 a ggplot2 object

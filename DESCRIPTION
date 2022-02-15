@@ -31,7 +31,10 @@ Imports:
     ComplexHeatmap,
     circlize,
     scico,
-    tidyr
+    tidyr,
+    SpatialExperiment,
+    SingleCellExperiment,
+    ExperimentList
 RoxygenNote: 7.1.2
 Suggests: 
     testthat (>= 3.0.0),

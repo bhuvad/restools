@@ -9,6 +9,8 @@ NULL
 #' @param assay a numeric or character, specifying the assay to use (for
 #'   SummarizedExperiment).
 #' @param precomputed a dimensional reduction results from `stats::prcomp`.
+#' @param dimred a string or integer scalar indicating the reduced dimension
+#'   result in `reducedDims(object)` to plot.
 #' @param rl a numeric, specifying the relative scale factor to apply to text on
 #'   the plot.
 #' @param ... aesthetic mappings to pass to `ggplot2::aes_string()`.
@@ -24,15 +26,12 @@ NULL
 setGeneric("plotPCA",
            function(edata,
                     dims = c(1, 2),
-                    assay = 1,
-                    precomputed = NULL,
-                    rl = 1,
                     ...) standardGeneric("plotPCA"))
 
 #' @rdname plotPCA
 setMethod("plotPCA",
-          signature('DGEList','ANY', 'missing', 'ANY', 'ANY'),
-          function(edata, dims, assay, precomputed, rl, ...){
+          signature('DGEList','ANY'),
+          function(edata, dims, precomputed = NULL, rl = 1, ...){
             #compute PCA
             if (is.null(precomputed)) {
               pcdata = calcPCA(edgeR::cpm(edata, log = TRUE), dims)
@@ -51,8 +50,8 @@ setMethod("plotPCA",
 
 #' @rdname plotPCA
 setMethod("plotPCA",
-          signature('ExpressionSet','ANY', 'missing', 'ANY', 'ANY'),
-          function(edata, dims, assay, precomputed, rl, ...){
+          signature('ExpressionSet','ANY'),
+          function(edata, dims, precomputed = NULL, rl = 1, ...){
             #compute PCA
             if (is.null(precomputed)) {
               pcdata = calcPCA(Biobase::exprs(edata), dims)
@@ -71,8 +70,8 @@ setMethod("plotPCA",
 
 #' @rdname plotPCA
 setMethod("plotPCA",
-          signature('SummarizedExperiment', 'ANY', 'ANY', 'ANY', 'ANY'),
-          function(edata, dims, assay, precomputed, rl, ...){
+          signature('SummarizedExperiment', 'ANY'),
+          function(edata, dims, assay = 1, precomputed = NULL, rl = 1, ...){
             #compute PCA
             if (is.null(precomputed)) {
               pcdata = calcPCA(SummarizedExperiment::assay(edata, assay), dims)
@@ -81,7 +80,56 @@ setMethod("plotPCA",
             }
 
             #extract sample data
-            sdata = BiocGenerics::as.data.frame(SummarizedExperiment::colData(edata), optional = TRUE)
+            if (is(edata, 'ExperimentList')) {
+              colFun = ExperimentList::colWithExperimentData
+            } else {
+              colFun = SummarizedExperiment::colData
+            }
+            sdata = BiocGenerics::as.data.frame(colFun(edata), optional = TRUE)
+            #create data structure
+            drdf = pdataPC_intl(pcdata, dims)
+            p1 = plotDR_intl(drdf, sdata, rl, ...)
+
+            return(p1)
+          })
+
+#' @rdname plotPCA
+setMethod("plotPCA",
+          signature('SingleCellExperiment', 'ANY'),
+          function(edata, dims, dimred = 'PCA', rl = 1, ...){
+            #compute PCA
+            precomputed = SingleCellExperiment::reducedDim(edata, type = dimred)
+            pcdata = checkPrecomputedPCA(edata, precomputed)
+
+            #extract sample data
+            if (is(edata, 'ExperimentList')) {
+              colFun = ExperimentList::colWithExperimentData
+            } else {
+              colFun = SummarizedExperiment::colData
+            }
+            sdata = BiocGenerics::as.data.frame(colFun(edata), optional = TRUE)
+            #create data structure
+            drdf = pdataPC_intl(pcdata, dims)
+            p1 = plotDR_intl(drdf, sdata, rl, ...)
+
+            return(p1)
+          })
+
+#' @rdname plotPCA
+setMethod("plotPCA",
+          signature('SpatialExperiment', 'ANY'),
+          function(edata, dims, dimred = 'PCA', rl = 1, ...){
+            #compute PCA
+            precomputed = SingleCellExperiment::reducedDim(edata, type = dimred)
+            pcdata = checkPrecomputedPCA(edata, precomputed)
+
+            #extract sample data
+            if (is(edata, 'ExperimentList')) {
+              colFun = ExperimentList::colWithExperimentData
+            } else {
+              colFun = SummarizedExperiment::colData
+            }
+            sdata = BiocGenerics::as.data.frame(colFun(edata), optional = TRUE)
             #create data structure
             drdf = pdataPC_intl(pcdata, dims)
             p1 = plotDR_intl(drdf, sdata, rl, ...)
@@ -214,8 +262,13 @@ checkPrecomputedMDS <- function(edata, mdsdata) {
 pdataPC_intl <- function(pcdata, dims) {
   stopifnot(length(dims) == 2)
 
+  #check sample names
+  rnames = rownames(pcdata)
+  if (is.null(rnames))
+    rnames = 1:nrow(pcdata)
+
   plotdf = data.frame(
-    'RestoolsMtchID' = rownames(pcdata),
+    'RestoolsMtchID' = rnames,
     x = pcdata[, dims[1]],
     y = pcdata[, dims[2]]
   )
@@ -245,7 +298,7 @@ pdataMDS_intl <- function(mdsdata, dims) {
 
 #add colour annotation
 addSampleAnnot <- function(plotdf, sdata) {
-  plotdf = cbind(plotdf, sdata[plotdf$RestoolsMtchID, ])
+  plotdf = cbind(plotdf, sdata[plotdf$RestoolsMtchID, , drop = FALSE])
   return(plotdf)
 }
 

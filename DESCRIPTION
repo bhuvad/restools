@@ -34,7 +34,9 @@ Imports:
     tidyr,
     SpatialExperiment,
     SingleCellExperiment,
-    ExperimentList
+    ExperimentList,
+    ggforce,
+    ggnewscale
 RoxygenNote: 7.1.2
 Suggests: 
     testthat (>= 3.0.0),

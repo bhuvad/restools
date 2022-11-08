@@ -15,6 +15,8 @@
 #'
 #' @examples
 readFeatureCountsRes <- function(fpath, plot = TRUE) {
+  requirePkg('edgeR')
+
   count_file = list.files(fpath, 'fc_counts.txt$', recursive = TRUE, full.names = TRUE)
   stats_file = list.files(fpath, 'fc_counts.txt.summary$', recursive = TRUE, full.names = TRUE)
   annot_file = list.files(fpath, 'SraRunTable.txt$', recursive = TRUE, full.names = TRUE)
@@ -46,7 +48,7 @@ readFeatureCountsRes <- function(fpath, plot = TRUE) {
         ggplot2::coord_flip() +
         ggplot2::scale_fill_manual(values = colmap) +
         ggplot2::labs(x = '', y = 'Million reads') +
-        vissE::bhuvad_theme()
+        bhuvad_theme()
     print(p1)
   }
 

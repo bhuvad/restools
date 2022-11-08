@@ -32,6 +32,8 @@ setGeneric("plotPCA",
 setMethod("plotPCA",
           signature('DGEList','ANY'),
           function(edata, dims, precomputed = NULL, rl = 1, ...){
+            requirePkg('edgeR')
+
             #compute PCA
             if (is.null(precomputed)) {
               pcdata = calcPCA(edgeR::cpm(edata, log = TRUE), dims)
@@ -150,6 +152,8 @@ setGeneric("plotMDS",
 setMethod("plotMDS",
           signature('DGEList','ANY', 'ANY', 'ANY'),
           function(edata, dims, precomputed, rl, ...){
+            requirePkg('limma')
+
             #compute PCA
             if (is.null(precomputed)) {
               mdsdata = limma::plotMDS(edata, plot = FALSE)
@@ -170,6 +174,8 @@ setMethod("plotMDS",
 setMethod("plotMDS",
           signature('ExpressionSet','ANY', 'ANY', 'ANY'),
           function(edata, dims, precomputed, rl, ...){
+            requirePkg('limma')
+
             #compute PCA
             if (is.null(precomputed)) {
               mdsdata = limma::plotMDS(edata, plot = FALSE)
@@ -190,6 +196,8 @@ setMethod("plotMDS",
 setMethod("plotMDS",
           signature('SummarizedExperiment','ANY', 'ANY', 'ANY'),
           function(edata, dims, precomputed, rl, ...){
+            requirePkg('limma')
+
             #compute PCA
             if (is.null(precomputed)) {
               mdsdata = limma::plotMDS(SummarizedExperiment::assay(edata), plot = FALSE)
@@ -319,5 +327,5 @@ plotDR_intl <- function(drdf, sdata, rl, ...) {
   ggplot2::ggplot(plotdf, ggplot2::aes(!!x, !!y, !!!aesmap)) +
     ggplot2::geom_point() +
     ggplot2::update_geom_defaults('point', defaultmap) +
-    vissE::bhuvad_theme(rl)
+    bhuvad_theme(rl)
 }

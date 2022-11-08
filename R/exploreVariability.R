@@ -23,6 +23,8 @@ setGeneric("explorePCVariability",
 setMethod("explorePCVariability",
           signature('DGEList','ANY', 'ANY', 'ANY'),
           function(edata, annots, maxdim, precomputed){
+            requirePkg('edgeR')
+
             #compute PCA
             if (is.null(precomputed)) {
               pcdata = calcPCA(edgeR::cpm(edata, log = TRUE), maxdim)
@@ -102,6 +104,9 @@ pmatPC_intl <- function(pcdata, maxdim) {
 }
 
 exploreDRVariability_intl <- function(drmat, sdata) {
+  requirePkg('ComplexHeatmap')
+  requirePkg('circlize')
+
   #convert to factors where needed
   sdata = as.data.frame(lapply(sdata, function(x) {
     if(!is(x, 'numeric'))

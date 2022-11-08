@@ -78,6 +78,7 @@ plotSpots <-
 
     #image
     if (img) {
+      requirePkg('ggnewscale')
       p1 = p1 +
         ggplot2::geom_raster(ggplot2::aes(x, y, fill = colour),
                              alpha = imgAlpha,
@@ -88,6 +89,7 @@ plotSpots <-
 
     #plot spots/circles
     if (circles) {
+      requirePkg('ggforce')
       #add radius if not present
       if (!'r' %in% names(aesmap)) {
         aesmap = c(aesmap, r = rlang::quo_set_env(quo(r), rlang::quo_get_env(aesmap[[1]])))
@@ -116,7 +118,7 @@ plotSpots <-
 
     #----theme----
     p1 = p1 +
-      vissE::bhuvad_theme(rl) +
+      bhuvad_theme(rl) +
       theme(axis.text = element_blank())
 
     return(p1)

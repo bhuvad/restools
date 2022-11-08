@@ -25,6 +25,8 @@ setGeneric("plotRLE",
 setMethod("plotRLE",
           signature('DGEList','ANY', 'ANY'),
           function(edata, ordannots, rl, ...){
+            requirePkg('edgeR')
+
             #extract sample data
             sdata = edata$samples
             #extract expression data (and transform)
@@ -128,7 +130,7 @@ plotRLE_intl <- function(plotdf, sdata, rl, ...) {
     ggplot2::geom_hline(yintercept = 0, colour = 2, lty = 2) +
     ggplot2::ylab('Relative log expression') +
     ggplot2::update_geom_defaults('boxplot', defaultmap) +
-    vissE::bhuvad_theme(rl) +
+    bhuvad_theme(rl) +
     ggplot2::theme(axis.text.x = element_blank())
 
   #update plot if too many samples are plot

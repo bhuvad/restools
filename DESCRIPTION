@@ -1,6 +1,6 @@
 Package: restools
 Title: Research tools for data science projects
-Version: 0.9.6
+Version: 0.9.7
 Authors@R: c(
             person("Dharmesh", "Bhuva", email = "bhuva.d@wehi.edu.au", role = c("aut", "cre"), comment = c(ORCID = '0000-0002-6398-9157')),
             person("Ahmed", "Mohamed", email = "mohamed.a@wehi.edu.au", role = c("aut"))
@@ -12,39 +12,37 @@ License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Imports: 
-    rmarkdown,
     rlang,
     stringr,
     BiocStyle,
     plyr,
     desc,
     tools,
-    vissE,
-    edgeR,
-    limma,
     ggplot2,
-    SummarizedExperiment,
     Biobase,
     grDevices,
     dplyr,
     stats,
-    ComplexHeatmap,
-    circlize,
     scico,
     tidyr,
     SpatialExperiment,
     SingleCellExperiment,
-    ggforce,
-    ggnewscale
+    SummarizedExperiment
 RoxygenNote: 7.1.2
 Suggests: 
     testthat (>= 3.0.0),
+    ComplexHeatmap,
+    circlize,
+    ggforce,
     emtdata,
+    edgeR,
+    limma,
     ALL,
     RCy3,
     xml2,
     httr,
     igraph,
     diffusr,
-    scater
+    scater,
+    ggnewscale
 Config/testthat/edition: 3

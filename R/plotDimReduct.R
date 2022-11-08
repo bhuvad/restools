@@ -271,11 +271,10 @@ pdataPC_intl <- function(pcdata, dims) {
 pdataMDS_intl <- function(mdsdata, dims) {
   stopifnot(length(dims) == 2)
 
-  lambda = pmax(mdsdata$eigen.values, 0)
   plotdf = data.frame(
     'RestoolsMtchID' = rownames(mdsdata$distance.matrix.squared),
-    x = mdsdata$eigen.vectors[, dims[1]] * lambda[dims[1]],
-    y = mdsdata$eigen.vectors[, dims[2]] * lambda[dims[2]]
+    x = mdsdata$eigen.vectors[, dims[1]],
+    y = mdsdata$eigen.vectors[, dims[2]]
   )
   pca_labs = paste0('Leading logFC dim ', 1:ncol(mdsdata$eigen.vectors))
   pca_labs = paste0(pca_labs, ' (', round(mdsdata$var.explained * 100, digits = 2) , '%)')

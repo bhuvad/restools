@@ -18,8 +18,10 @@ plotSpots(
 )
 }
 \arguments{
-\item{spe}{a SpatialExperiment or SpatialExperimentList object.
-be plot in the background.}
+\item{spe}{a SpatialExperiment object.}
+
+\item{what}{a character specifying what aspect should be plot, "annotation",
+"expression" or reduced dimension ("reduceddim").}
 
 \item{...}{aesthetic mappings to pass to `ggplot2::aes_string()`.}
 

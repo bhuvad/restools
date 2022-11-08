@@ -80,11 +80,7 @@ setMethod("plotPCA",
             }
 
             #extract sample data
-            if (is(edata, 'ExperimentList')) {
-              colFun = ExperimentList::colWithExperimentData
-            } else {
-              colFun = SummarizedExperiment::colData
-            }
+            colFun = SummarizedExperiment::colData
             sdata = BiocGenerics::as.data.frame(colFun(edata), optional = TRUE)
             #create data structure
             drdf = pdataPC_intl(pcdata, dims)
@@ -102,11 +98,7 @@ setMethod("plotPCA",
             pcdata = checkPrecomputedPCA(edata, precomputed)
 
             #extract sample data
-            if (is(edata, 'ExperimentList')) {
-              colFun = ExperimentList::colWithExperimentData
-            } else {
-              colFun = SummarizedExperiment::colData
-            }
+            colFun = SummarizedExperiment::colData
             sdata = BiocGenerics::as.data.frame(colFun(edata), optional = TRUE)
             #create data structure
             drdf = pdataPC_intl(pcdata, dims)
@@ -124,11 +116,7 @@ setMethod("plotPCA",
             pcdata = checkPrecomputedPCA(edata, precomputed)
 
             #extract sample data
-            if (is(edata, 'ExperimentList')) {
-              colFun = ExperimentList::colWithExperimentData
-            } else {
-              colFun = SummarizedExperiment::colData
-            }
+            colFun = SummarizedExperiment::colData
             sdata = BiocGenerics::as.data.frame(colFun(edata), optional = TRUE)
             #create data structure
             drdf = pdataPC_intl(pcdata, dims)

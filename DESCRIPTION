@@ -1,6 +1,6 @@
 Package: restools
 Title: Research tools for data science projects
-Version: 0.9.4
+Version: 0.9.5
 Authors@R: c(
             person("Dharmesh", "Bhuva", email = "bhuva.d@wehi.edu.au", role = c("aut", "cre"), comment = c(ORCID = '0000-0002-6398-9157')),
             person("Ahmed", "Mohamed", email = "mohamed.a@wehi.edu.au", role = c("aut"))
@@ -34,7 +34,6 @@ Imports:
     tidyr,
     SpatialExperiment,
     SingleCellExperiment,
-    ExperimentList,
     ggforce,
     ggnewscale
 RoxygenNote: 7.1.2

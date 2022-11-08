@@ -1,8 +1,8 @@
 #' Plot spatial transcriptomic annotations per spot
 #'
-#' @param spe a SpatialExperiment or SpatialExperimentList object.
-#'   be plot in the background.
-#' @param what
+#' @param spe a SpatialExperiment object.
+#' @param what a character specifying what aspect should be plot, "annotation",
+#'   "expression" or reduced dimension ("reduceddim").
 #' @param ...
 #' @param img a logical indicating whether the tissue image (if present) should
 #' @param imgAlpha
@@ -23,7 +23,6 @@ plotSpots <-
            rl = 1,
            circles = FALSE) {
     what = match.arg(what)
-    isSPEList = is(spe, 'ExperimentList')
 
     #----extract aes----
     aesmap = rlang::enquos(...)
@@ -53,51 +52,23 @@ plotSpots <-
 
     #----add spatial coordinates and scales----
     sf = 1
-    if (isSPEList) {
-      sf = SpatialExperiment::scaleFactors(spe)[seq(ExperimentList::nexp(spe))]
-      sf = rep(sf, times = ExperimentList::elapply(spe, ncol))
-    } else {
-      sf = SpatialExperiment::scaleFactors(spe)[1]
-      sf = rep(sf, ncol(spe))
-    }
+    sf = SpatialExperiment::scaleFactors(spe)[1]
+    sf = rep(sf, ncol(spe))
     plotdf = cbind(plotdf, SpatialExperiment::spatialCoords(spe))
     plotdf = as.data.frame(plotdf)
     plotdf$sf = sf
 
-    #----add SPEList facets if necessary----
-    if (isSPEList) {
-      #add experiment indices to plotdf
-      plotdf$SPEListFacet = spe@experimentIndex
-      if (!is.null(ExperimentList::experimentNames(spe))) {
-        #add names to plotdf
-        plotdf$SPEListFacet = ExperimentList::experimentNames(spe)[plotdf$SPEListFacet]
-        if (img)
-          #add names to imgdf
-          imgdf$SPEListFacet = ExperimentList::experimentNames(spe)[imgdf$SPEListFacet]
-      }
-    } else {
-      plotdf$SPEListFacet = 1
-    }
-
     #crop
     if (crop & img) {
-      #crop image data
-      nspe = unique(plotdf$SPEListFacet)
-      imgdf = lapply(nspe, function(i) {
-        ftr = plotdf$SPEListFacet %in% i
+      #compute lims
+      xlim = range((plotdf$pxl_row_in_fullres * plotdf$sf))
+      ylim = range((plotdf$pxl_col_in_fullres * plotdf$sf))
 
-        #compute lims
-        xlim = range((plotdf$pxl_row_in_fullres * plotdf$sf)[ftr])
-        ylim = range((plotdf$pxl_col_in_fullres * plotdf$sf)[ftr])
-
-        #filter image data - remove out-of-bounds pixels
-        x = imgdf[imgdf$SPEListFacet %in% i &
-                    imgdf$x >= xlim[1] &
-                    imgdf$x <= xlim[2] &
-                    imgdf$y >= ylim[1] &
-                    imgdf$y <= ylim[2], ]
-        return(x)
-      })
+      #filter image data - remove out-of-bounds pixels
+      imgdf = imgdf[imgdf$x >= xlim[1] &
+                  imgdf$x <= xlim[2] &
+                  imgdf$y >= ylim[1] &
+                  imgdf$y <= ylim[2], ]
       imgdf = do.call(rbind, imgdf)
     }
 
@@ -143,12 +114,6 @@ plotSpots <-
         ggplot2::update_geom_defaults('point', defaultmap)
     }
 
-    #SPEList?
-    if (isSPEList) {
-      p1 = p1 +
-        ggplot2::facet_wrap(~ SPEListFacet, scales = 'free')
-    }
-
     #----theme----
     p1 = p1 +
       vissE::bhuvad_theme(rl) +
@@ -158,11 +123,7 @@ plotSpots <-
   }
 
 extractAnnotation <- function(spe) {
-  if (is(spe, 'SpatialExperimentList')) {
-    SummarizedExperiment::colData(spe, experimentData = TRUE)
-  } else {
-    SummarizedExperiment::colData(spe)
-  }
+  SummarizedExperiment::colData(spe)
 }
 
 extractExpression <- function(spe, assay) {
@@ -178,9 +139,6 @@ extractReducedDim <- function(spe, dimred) {
 extractImage <- function(spe) {
   #determine number of images to expect
   nimg = 1 #use the first only for SPEs
-  if (is(spe, 'ExperimentList')) {
-    nimg = ExperimentList::nexp(spe)
-  }
 
   #get img data
   imgdf = SpatialExperiment::imgData(spe)[seq(nimg), 'data']
@@ -195,13 +153,6 @@ extractImage <- function(spe) {
       colour = as.character(x)
     )
   })
-
-  #combine and add image index (to use for SPEList)
-  imgdf = mapply(function(df, i) {
-    df$SPEListFacet = i
-    return(df)
-  }, imgdf, seq(nimg), SIMPLIFY = FALSE)
-  imgdf = do.call(rbind, imgdf)
 
   return(imgdf)
 }

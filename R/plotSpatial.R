@@ -52,7 +52,8 @@ plotSpots <-
 
     #----add spatial coordinates and scales----
     sf = 1
-    sf = SpatialExperiment::scaleFactors(spe)[1]
+    if (img)
+      sf = SpatialExperiment::scaleFactors(spe)[1]
     sf = rep(sf, ncol(spe))
     plotdf = cbind(plotdf, SpatialExperiment::spatialCoords(spe))
     plotdf = as.data.frame(plotdf)

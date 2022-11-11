@@ -46,24 +46,25 @@ plotSpots <-
 
     #----image data----
     imgdf = NULL
+    sf = 1
     if (img) {
       imgdf = extractImage(spe)
+      sf = SpatialExperiment::scaleFactors(spe)[1]
     }
 
     #----add spatial coordinates and scales----
-    sf = 1
-    if (img)
-      sf = SpatialExperiment::scaleFactors(spe)[1]
     sf = rep(sf, ncol(spe))
-    plotdf = cbind(plotdf, SpatialExperiment::spatialCoords(spe))
+    spatdf = SpatialExperiment::spatialCoords(spe)
+    colnames(spatdf) = c('x', 'y')
+    plotdf = cbind(plotdf, spatdf)
     plotdf = as.data.frame(plotdf)
     plotdf$sf = sf
 
     #crop
     if (crop & img) {
       #compute lims
-      xlim = range((plotdf$pxl_row_in_fullres * plotdf$sf))
-      ylim = range((plotdf$pxl_col_in_fullres * plotdf$sf))
+      xlim = range((plotdf$x * plotdf$sf))
+      ylim = range((plotdf$y * plotdf$sf))
 
       #filter image data - remove out-of-bounds pixels
       imgdf = imgdf[imgdf$x >= xlim[1] &
@@ -104,14 +105,14 @@ plotSpots <-
 
       p1 = p1 +
         ggforce::geom_circle(
-          ggplot2::aes(, , x0 = pxl_row_in_fullres * sf, y0 = pxl_col_in_fullres * sf,!!!aesmap),
+          ggplot2::aes(, , x0 = x * sf, y0 = y * sf,!!!aesmap),
           data = plotdf
         ) +
         ggplot2::update_geom_defaults(ggforce::GeomCircle, defaultmap)
     } else {
       p1 = p1 +
         ggplot2::geom_point(
-          ggplot2::aes(x = pxl_row_in_fullres * sf, y = pxl_col_in_fullres * sf,!!!aesmap),
+          ggplot2::aes(x = x * sf, y = y * sf,!!!aesmap),
           data = plotdf
         ) +
         ggplot2::update_geom_defaults('point', defaultmap)

@@ -121,7 +121,8 @@ plotSpots <-
     #----theme----
     p1 = p1 +
       bhuvad_theme(rl) +
-      theme(axis.text = element_blank())
+      ggplot2::labs(x = SpatialExperiment::spatialCoordsNames(spe)[1],
+                    y = SpatialExperiment::spatialCoordsNames(spe)[2])
 
     return(p1)
   }

@@ -16,13 +16,12 @@
 setGeneric("explorePCVariability",
            function(edata,
                     annots,
-                    maxdim = 25,
-                    precomputed = NULL) standardGeneric("explorePCVariability"))
+                    ...) standardGeneric("explorePCVariability"))
 
 #' @rdname explorePCVariability
 setMethod("explorePCVariability",
-          signature('DGEList','ANY', 'ANY', 'ANY'),
-          function(edata, annots, maxdim, precomputed){
+          signature('DGEList','ANY'),
+          function(edata, annots, maxdim = 25, precomputed = NULL, ...){
             requirePkg('edgeR')
 
             #compute PCA
@@ -42,8 +41,8 @@ setMethod("explorePCVariability",
 
 #' @rdname explorePCVariability
 setMethod("explorePCVariability",
-          signature('ExpressionSet','ANY', 'ANY', 'ANY'),
-          function(edata, annots, maxdim, precomputed){
+          signature('ExpressionSet','ANY'),
+          function(edata, annots, maxdim = 25, precomputed = NULL, ...){
             #compute PCA
             if (is.null(precomputed)) {
               pcdata = calcPCA(Biobase::exprs(edata), maxdim)
@@ -61,11 +60,11 @@ setMethod("explorePCVariability",
 
 #' @rdname explorePCVariability
 setMethod("explorePCVariability",
-          signature('SummarizedExperiment','ANY', 'ANY', 'ANY'),
-          function(edata, annots, maxdim, precomputed){
+          signature('SummarizedExperiment','ANY'),
+          function(edata, annots, assay = 1, maxdim = 25, precomputed = NULL, ...){
             #compute PCA
             if (is.null(precomputed)) {
-              pcdata = calcPCA(SummarizedExperiment::assay(edata), maxdim)
+              pcdata = calcPCA(SummarizedExperiment::assay(edata, assay), maxdim)
             } else {
               pcdata = checkPrecomputedPCA(edata, precomputed)
             }

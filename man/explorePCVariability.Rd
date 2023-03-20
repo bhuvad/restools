@@ -7,13 +7,20 @@
 \alias{explorePCVariability,SummarizedExperiment-method}
 \title{Compute and plot the results of a PCA analysis on gene expression data}
 \usage{
-explorePCVariability(edata, annots, maxdim = 25, precomputed = NULL)
+explorePCVariability(edata, annots, ...)
 
-\S4method{explorePCVariability}{DGEList}(edata, annots, maxdim = 25, precomputed = NULL)
+\S4method{explorePCVariability}{DGEList}(edata, annots, maxdim = 25, precomputed = NULL, ...)
 
-\S4method{explorePCVariability}{ExpressionSet}(edata, annots, maxdim = 25, precomputed = NULL)
+\S4method{explorePCVariability}{ExpressionSet}(edata, annots, maxdim = 25, precomputed = NULL, ...)
 
-\S4method{explorePCVariability}{SummarizedExperiment}(edata, annots, maxdim = 25, precomputed = NULL)
+\S4method{explorePCVariability}{SummarizedExperiment}(
+  edata,
+  annots,
+  assay = 1,
+  maxdim = 25,
+  precomputed = NULL,
+  ...
+)
 }
 \arguments{
 \item{edata}{a DGEList, SummarizedExperiment or ExpressionSet object
@@ -22,9 +29,14 @@ containing gene expression data.}
 \item{annots}{variables to assess for contributions in each PC. ANOVA is used
 for categorical variables and linear models for continuous variables.}
 
+\item{...}{aesthetic mappings to pass to `ggplot2::aes_string()`.}
+
 \item{maxdim}{a numeric, specifying the maximum number of dimensions to plot.}
 
 \item{precomputed}{a dimensional reduction results from `stats::prcomp`.}
+
+\item{assay}{a numeric or character, specifying the assay to use (for
+SummarizedExperiment).}
 }
 \value{
 a `Heatmap-class` object.

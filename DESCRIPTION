@@ -1,6 +1,6 @@
 Package: restools
 Title: Research tools for data science projects
-Version: 0.9.10
+Version: 0.9.11
 Authors@R: c(
             person("Dharmesh", "Bhuva", email = "bhuva.d@wehi.edu.au", role = c("aut", "cre"), comment = c(ORCID = '0000-0002-6398-9157')),
             person("Ahmed", "Mohamed", email = "mohamed.a@wehi.edu.au", role = c("aut"))
@@ -28,7 +28,7 @@ Imports:
     SpatialExperiment,
     SingleCellExperiment,
     SummarizedExperiment
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.3
 Suggests: 
     testthat (>= 3.0.0),
     ComplexHeatmap,

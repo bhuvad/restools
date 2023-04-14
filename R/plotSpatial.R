@@ -134,11 +134,13 @@ extractAnnotation <- function(spe) {
 extractExpression <- function(spe, assay) {
   SummarizedExperiment::assay(spe, assay) |>
     as.matrix() |>
-    t()
+    t() |>
+    cbind(SummarizedExperiment::colData(spe))
 }
 
 extractReducedDim <- function(spe, dimred) {
-  SingleCellExperiment::reducedDim(spe, type = dimred)
+  SingleCellExperiment::reducedDim(spe, type = dimred) |>
+    cbind(SummarizedExperiment::colData(spe))
 }
 
 extractImage <- function(spe) {

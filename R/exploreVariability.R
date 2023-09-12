@@ -114,16 +114,13 @@ exploreDRVariability_intl <- function(drmat, sdata) {
       x
   }))
 
-  #specify model
+  # specify model
   fit = lm(drmat ~ ., data = sdata)
-  plotmat = lapply(summary(stats::aov(fit)), function(x) x[['Pr(>F)']])
-  plotmat = do.call(rbind, plotmat)
-  plotmat = plotmat[, 1:ncol(sdata), drop = FALSE]
-  colnames(plotmat) = colnames(sdata)
-  rownames(plotmat) = colnames(drmat)
+  aov = car::Anova(fit, type = "II")
+  plotmat = t(summary(aov, univariate = TRUE, p.adjust.method = 'fdr')$univaov$p.adjust)
 
-  #adjust p.values
-  plotmat = apply(plotmat, 2, stats::p.adjust)
+  # # print summary of MANOVA - need to figure out how to extract p-values
+  # print(summary(aov)$multivariate.tests, SSP = FALSE)
 
   #Scree plot as a row annotation
   #extract proportions from names

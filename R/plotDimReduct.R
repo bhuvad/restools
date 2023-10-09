@@ -9,6 +9,9 @@ NULL
 #' @param assay a numeric or character, specifying the assay to use (for
 #'   SummarizedExperiment).
 #' @param precomputed a dimensional reduction results from `stats::prcomp`.
+#' @param subset_row NULL (default) or character, for the features to use in
+#'   calculating the PCA with `scater::calculatePCA`. The default will use the
+#'   top 500 features.
 #' @param dimred a string or integer scalar indicating the reduced dimension
 #'   result in `reducedDims(object)` to plot.
 #' @param rl a numeric, specifying the relative scale factor to apply to text on
@@ -31,12 +34,12 @@ setGeneric("plotPCA",
 #' @rdname plotPCA
 setMethod("plotPCA",
           signature('DGEList','ANY'),
-          function(edata, dims, precomputed = NULL, rl = 1, ...){
+          function(edata, dims, precomputed = NULL, rl = 1, subset_row = NULL, ...){
             requirePkg('edgeR')
 
             #compute PCA
             if (is.null(precomputed)) {
-              pcdata = calcPCA(edgeR::cpm(edata, log = TRUE), dims)
+              pcdata = calcPCA(edgeR::cpm(edata, log = TRUE), dims, subset_row)
             } else {
               pcdata = checkPrecomputedPCA(edata, precomputed)
             }
@@ -53,10 +56,10 @@ setMethod("plotPCA",
 #' @rdname plotPCA
 setMethod("plotPCA",
           signature('ExpressionSet','ANY'),
-          function(edata, dims, precomputed = NULL, rl = 1, ...){
+          function(edata, dims, precomputed = NULL, rl = 1, subset_row = NULL, ...){
             #compute PCA
             if (is.null(precomputed)) {
-              pcdata = calcPCA(Biobase::exprs(edata), dims)
+              pcdata = calcPCA(Biobase::exprs(edata), dims, subset_row)
             } else {
               pcdata = checkPrecomputedPCA(edata, precomputed)
             }
@@ -73,10 +76,10 @@ setMethod("plotPCA",
 #' @rdname plotPCA
 setMethod("plotPCA",
           signature('SummarizedExperiment', 'ANY'),
-          function(edata, dims, assay = 1, precomputed = NULL, rl = 1, ...){
+          function(edata, dims, assay = 1, precomputed = NULL, rl = 1, subset_row = NULL, ...){
             #compute PCA
             if (is.null(precomputed)) {
-              pcdata = calcPCA(SummarizedExperiment::assay(edata, assay), dims)
+              pcdata = calcPCA(SummarizedExperiment::assay(edata, assay), dims, subset_row)
             } else {
               pcdata = checkPrecomputedPCA(edata, precomputed)
             }
@@ -214,10 +217,18 @@ setMethod("plotMDS",
             return(p1)
           })
 
-calcPCA <- function(edata, dims) {
+calcPCA <- function(edata, dims, subset_row) {
   maxdim = max(dims)
   if (requireNamespace('scater', quietly = TRUE) & maxdim < ncol(edata)) {
-    pcdata = scater::calculatePCA(edata, ncomponents = maxdim)
+    if(is.null(subset_row)){
+      pcdata = scater::calculatePCA(edata, ncomponents = maxdim)
+    } else{
+      pcdata = scater::calculatePCA(
+        edata,
+        ncomponents = maxdim,
+        subset_row = subset_row
+        )
+    }
   } else {
     pcdata = stats::prcomp(t(edata))
     pcdata = checkPrecomputedPCA(edata, pcdata)

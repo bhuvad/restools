@@ -221,8 +221,11 @@ calcPCA <- function(edata, dims, subset_row) {
   maxdim = max(dims)
   if (requireNamespace('scater', quietly = TRUE) & maxdim < ncol(edata)) {
     if(is.null(subset_row)){
+      message("Using the scater default of 500 features as input")
       pcdata = scater::calculatePCA(edata, ncomponents = maxdim)
     } else{
+      stopifnot(all(subset_row %in% rownames(edata)))
+
       pcdata = scater::calculatePCA(
         edata,
         ncomponents = maxdim,

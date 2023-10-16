@@ -31,3 +31,23 @@ test_that("plotPCA works with Eset", {
   p <- plotPCA(ALL, color=age2)
   expect_error(print(p), NA)
 })
+
+test_that("plotPCA row subset works as expected", {
+
+  cu_se <- emtdata::cursons2018_se()
+  gene_subset <- sample(rownames(cu_se), 50)
+
+  expect_message( # not setting works but gives a message
+    plt <- plotPCA(cu_se, assay = "logRPKM", colour = Subline),
+    "Using the scater default of 500 features as input"
+  )
+
+  expect_silent(
+    plt <- plotPCA(cu_se, assay = "logRPKM", subset_row = gene_subset, colour = Subline) # 50 stable genes
+  )
+
+  expect_error( # expect error for missing features
+    plt <- plotPCA(cu_se, assay = "logRPKM", subset_row = c("bad", "names"), colour = Subline)
+    )
+
+})

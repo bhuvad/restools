@@ -9,9 +9,23 @@
 \usage{
 explorePCVariability(edata, annots, ...)
 
-\S4method{explorePCVariability}{DGEList}(edata, annots, maxdim = 25, precomputed = NULL, ...)
+\S4method{explorePCVariability}{DGEList}(
+  edata,
+  annots,
+  maxdim = 25,
+  precomputed = NULL,
+  subset_row = NULL,
+  ...
+)
 
-\S4method{explorePCVariability}{ExpressionSet}(edata, annots, maxdim = 25, precomputed = NULL, ...)
+\S4method{explorePCVariability}{ExpressionSet}(
+  edata,
+  annots,
+  maxdim = 25,
+  precomputed = NULL,
+  subset_row = NULL,
+  ...
+)
 
 \S4method{explorePCVariability}{SummarizedExperiment}(
   edata,
@@ -19,6 +33,7 @@ explorePCVariability(edata, annots, ...)
   assay = 1,
   maxdim = 25,
   precomputed = NULL,
+  subset_row = NULL,
   ...
 )
 }
@@ -34,6 +49,10 @@ for categorical variables and linear models for continuous variables.}
 \item{maxdim}{a numeric, specifying the maximum number of dimensions to plot.}
 
 \item{precomputed}{a dimensional reduction results from `stats::prcomp`.}
+
+\item{subset_row}{NULL (default) or character, for the features to use in
+calculating the PCA with `scater::calculatePCA`. The default will use the
+top 500 features.}
 
 \item{assay}{a numeric or character, specifying the assay to use (for
 SummarizedExperiment).}

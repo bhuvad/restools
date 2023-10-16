@@ -11,11 +11,19 @@
 \usage{
 plotPCA(edata, dims = c(1, 2), ...)
 
-\S4method{plotPCA}{DGEList}(edata, dims, precomputed = NULL, rl = 1, ...)
+\S4method{plotPCA}{DGEList}(edata, dims, precomputed = NULL, rl = 1, subset_row = NULL, ...)
 
-\S4method{plotPCA}{ExpressionSet}(edata, dims, precomputed = NULL, rl = 1, ...)
+\S4method{plotPCA}{ExpressionSet}(edata, dims, precomputed = NULL, rl = 1, subset_row = NULL, ...)
 
-\S4method{plotPCA}{SummarizedExperiment}(edata, dims, assay = 1, precomputed = NULL, rl = 1, ...)
+\S4method{plotPCA}{SummarizedExperiment}(
+  edata,
+  dims,
+  assay = 1,
+  precomputed = NULL,
+  rl = 1,
+  subset_row = NULL,
+  ...
+)
 
 \S4method{plotPCA}{SingleCellExperiment}(edata, dims, dimred = "PCA", rl = 1, ...)
 
@@ -33,6 +41,10 @@ containing gene expression data.}
 
 \item{rl}{a numeric, specifying the relative scale factor to apply to text on
 the plot.}
+
+\item{subset_row}{NULL (default) or character, for the features to use in
+calculating the PCA with `scater::calculatePCA`. The default will use the
+top 500 features.}
 
 \item{assay}{a numeric or character, specifying the assay to use (for
 SummarizedExperiment).}

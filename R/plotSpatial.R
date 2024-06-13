@@ -60,7 +60,7 @@ plotSpots <-
     plotdf = as.data.frame(plotdf)
     plotdf$sf = sf
 
-    #crop
+    # crop
     if (crop & img) {
       #compute lims
       xlim = range((plotdf$x * plotdf$sf))
@@ -71,7 +71,6 @@ plotSpots <-
                   imgdf$x <= xlim[2] &
                   imgdf$y >= ylim[1] &
                   imgdf$y <= ylim[2], ]
-      imgdf = do.call(rbind, imgdf)
     }
 
     #----plot----
@@ -144,22 +143,25 @@ extractReducedDim <- function(spe, dimred) {
 }
 
 extractImage <- function(spe) {
-  #determine number of images to expect
-  nimg = 1 #use the first only for SPEs
+  if (any(duplicated(SpatialExperiment::imgData(spe)$sample_id))) {
+    stop("multiple records found for some samples in 'imgData'")
+  }
 
-  #get img data
-  imgdf = SpatialExperiment::imgData(spe)[seq(nimg), 'data']
-  names(imgdf) = seq(nimg)
-  imgdf = lapply(imgdf, function(x) {
+  # get img data
+  imgdf = SpatialExperiment::imgData(spe)$data
+  names(imgdf) = SpatialExperiment::imgData(spe)$sample_id
+  imgdf = mapply(function(x, sample_id) {
     x = as.matrix(SpatialExperiment::imgRaster(x))
     nc = ncol(x)
     nr = nrow(x)
     data.frame(
       x = rep(seq(nc), each = nr),
       y = rep(seq(nr), nc),
-      colour = as.character(x)
+      colour = as.character(x),
+      sample_id = sample_id
     )
-  })
+  }, imgdf, names(imgdf), SIMPLIFY = FALSE) |>
+    do.call(what = rbind)
 
   return(imgdf)
 }
